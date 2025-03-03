@@ -34,6 +34,13 @@ export default function TabLayout() {
         tabBarIcon: ({ color }) => <Ionicons size={28} name="home" color={color} />,
           }}
         />
+         <Tabs.Screen
+          name="BudgetScreen"
+          options={{
+        title: 'Đặt chi tiêu',
+        tabBarIcon: ({ color }) => <Ionicons size={28} name="pencil" color={color} />,
+          }}
+        />
               <Tabs.Screen
           name="scan"
           options={{

@@ -1,9 +1,8 @@
 import { BACKEND_URL } from '../config';
 import { Alert } from 'react-native';
-
 import { Platform } from 'react-native';
 
-const uploadPhoto = async (photoUri: string): Promise<string | null> => {
+const uploadPhoto = async (photoUri: string, userId: string): Promise<any | null> => {
   try {
     const formData = new FormData();
 
@@ -12,6 +11,8 @@ const uploadPhoto = async (photoUri: string): Promise<string | null> => {
       name: 'photo.jpg',
       type: 'image/jpeg',
     } as any);
+
+    formData.append('userId', userId);
 
     const response = await fetch(`${BACKEND_URL}/ocr`, {
       method: 'POST',
@@ -27,7 +28,7 @@ const uploadPhoto = async (photoUri: string): Promise<string | null> => {
 
     const result = await response.json();
     console.log('OCR Result:', result);
-    return result.text || 'No text detected';
+    return result;
   } catch (error) {
     console.error('Upload error:', error);
     return null;

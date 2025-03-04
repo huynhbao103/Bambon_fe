@@ -73,7 +73,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     }
   };
 
-  // Di chuyển filteredTransactions lên trước useEffect
   const filterTransactionsByTime = (transactions: any[]) => {
     const now = new Date();
     return transactions.filter((t) => {
@@ -188,6 +187,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     }
   };
 
+  // Sửa updateTransaction
   const updateTransaction = async () => {
     try {
       const response = await axios.put(
@@ -201,12 +201,17 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       setSelectedTransaction(updatedTransaction);
       setIsEditing(false);
       Alert.alert("Thành công", "Giao dịch đã được cập nhật!");
+      fetchTransactionsAndBudget(); // Làm mới danh sách giao dịch
     } catch (error) {
-      console.error("Lỗi khi sửa giao dịch:", error);
-      Alert.alert("Lỗi", "Không thể cập nhật giao dịch. Vui lòng thử lại!");
+      console.error("Lỗi khi sửa giao dịch:");
+      Alert.alert(
+        "Lỗi",
+       "Không thể cập nhật giao dịch. Vui lòng thử lại!"
+      );
     }
   };
 
+  // Sửa deleteTransaction
   const deleteTransaction = async (transactionId: string) => {
     Alert.alert(
       "Xác nhận xóa",
@@ -222,9 +227,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
               setTransactions((prev) => prev.filter((t) => t._id !== transactionId));
               setSelectedTransaction(null);
               Alert.alert("Thành công", "Giao dịch đã được xóa!");
+              fetchTransactionsAndBudget(); // Làm mới danh sách giao dịch
             } catch (error) {
-              console.error("Lỗi khi xóa giao dịch:", error);
-              Alert.alert("Lỗi", "Không thể xóa giao dịch. Vui lòng thử lại!");
+              console.error("Lỗi khi xóa giao dịch:");
+              Alert.alert(
+                "Lỗi",
+                 "Không thể xóa giao dịch. Vui lòng thử lại!"
+              );
             }
           },
         },
@@ -255,7 +264,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     fetchTransactionsAndBudget();
   };
 
-  // Dữ liệu biểu đồ
   const chartData = {
     labels: ["Thu nhập", "Chi tiêu", "Tiết kiệm"],
     datasets: [
@@ -326,7 +334,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                     width={Dimensions.get("window").width - 60}
                     height={220}
                     yAxisLabel="đ"
-                    yAxisSuffix="" // Thêm yAxisSuffix để khớp với kiểu
+                    yAxisSuffix=""
                     chartConfig={chartConfig}
                     style={styles.chart}
                   />
@@ -403,7 +411,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         />
       )}
 
-      {/* Modal BudgetScreen */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -421,7 +428,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         </View>
       </Modal>
 
-      {/* Modal chi tiết giao dịch */}
       {selectedTransaction && (
         <Modal
           animationType="slide"

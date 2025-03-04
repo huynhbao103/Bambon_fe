@@ -1,16 +1,30 @@
 import { BACKEND_URL } from '../config';
-import { Alert } from 'react-native';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
-const uploadPhoto = async (photoUri: string, userId: string): Promise<any | null> => {
+interface TransactionResponse {
+  message?: string;
+  data?: {
+    type: 'income' | 'expense';
+    category: string;
+    items: { productName: string; quantity: number; price: number }[];
+    amount: number;
+    userId: string;
+  };
+  error?: string;
+  note?: string;
+}
+
+const uploadPhoto = async (photoUri: string, userId: string): Promise<TransactionResponse | null> => {
   try {
     const formData = new FormData();
 
+    // Handle URI differences between Android and iOS
+    const uri = Platform.OS === 'android' ? photoUri : photoUri.replace('file://', '');
     formData.append('image', {
-      uri: Platform.OS === 'android' ? photoUri : photoUri.replace('file://', ''),
+      uri,
       name: 'photo.jpg',
       type: 'image/jpeg',
-    } as any);
+    } as any); // Type assertion for FormData compatibility
 
     formData.append('userId', userId);
 
@@ -18,19 +32,22 @@ const uploadPhoto = async (photoUri: string, userId: string): Promise<any | null
       method: 'POST',
       body: formData,
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
+        // Note: 'Content-Type' is omitted because FormData sets it automatically with the boundary
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Upload failed with status ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`Upload failed with status ${response.status}: ${errorText}`);
     }
 
-    const result = await response.json();
+    const result: TransactionResponse = await response.json();
     console.log('OCR Result:', result);
     return result;
   } catch (error) {
     console.error('Upload error:', error);
+    Alert.alert('Lỗi', `Không thể tải ảnh lên: ${error}`);
     return null;
   }
 };

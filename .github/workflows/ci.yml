@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+jobs:
+ development-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint
+        
+      - name: Run Jest tests
+        run: |
+          if [ -z "$(find src -name '*.test.*' -o -name '*.spec.*')" ]; then
+            echo "No tests found, skipping Jest..."
+          else
+            npm run test -- --coverage
+          fi
+

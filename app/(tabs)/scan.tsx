@@ -1,16 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Button, StyleSheet, Text, TouchableOpacity, View,
-  Image, Alert, SafeAreaView, Platform, ActivityIndicator
+  Image, Alert, SafeAreaView, Platform, ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import uploadPhoto from '../../schema/uploadPhoto';
-import { fetchUserId } from '../../schema/authen'; // Điều chỉnh đường dẫn đến file auth.ts
+import { fetchUserId } from '../../schema/authen';
 
 const ScanScreen = () => {
-  const [facing, setFacing] = useState('back');
+  const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -18,10 +18,12 @@ const ScanScreen = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const cameraRef = useRef<CameraView>(null);
 
-  // Lấy userId từ AsyncStorage khi component mount
   useEffect(() => {
     const getUserId = async () => {
       const id = await fetchUserId();
+      if (!id) {
+        Alert.alert('Lỗi', 'Không thể lấy userId. Vui lòng đăng nhập lại.');
+      }
       setUserId(id);
     };
     getUserId();
@@ -34,8 +36,8 @@ const ScanScreen = () => {
   if (!permission.granted) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <Text style={styles.message}>Chúng tôi cần quyền truy cập camera</Text>
+        <Button onPress={requestPermission} title="Cấp quyền" />
       </SafeAreaView>
     );
   }
@@ -57,15 +59,15 @@ const ScanScreen = () => {
     const result = await uploadPhoto(uri, userId);
     if (result) {
       if (result.error) {
-        Alert.alert('Error', result.error);
+        Alert.alert('Lỗi', result.error);
       } else if (result.note) {
-        Alert.alert('Note', result.note);
-      } else {
+        Alert.alert('Thông báo', result.note);
+      } else if (result.data) {
         setTransactionData(result.data);
-        Alert.alert('Success', 'Giao dịch đã được lưu thành công!');
+        Alert.alert('Thành công', result.message || 'Giao dịch đã được lưu thành công!');
       }
     } else {
-      Alert.alert('Error', 'Không nhận được kết quả từ server.');
+      Alert.alert('Lỗi', 'Không nhận được phản hồi từ server.');
     }
     setLoading(false);
   };
@@ -74,15 +76,16 @@ const ScanScreen = () => {
     if (cameraRef.current) {
       try {
         setLoading(true);
-        const photo = await cameraRef.current.takePictureAsync();
+        const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
         if (photo?.uri) {
           setPhotoUri(photo.uri);
           await handlePhotoUpload(photo.uri);
         } else {
-          Alert.alert('Error', 'Failed to capture photo. Please try again.');
+          Alert.alert('Lỗi', 'Không thể chụp ảnh. Vui lòng thử lại.');
         }
       } catch (error) {
-        Alert.alert('Error', 'Failed to take picture. Please try again.');
+        console.error('Take picture error:', error);
+        Alert.alert('Lỗi', 'Không thể chụp ảnh: ' + error);
       } finally {
         setLoading(false);
       }
@@ -90,16 +93,19 @@ const ScanScreen = () => {
   };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        quality: 1,
+      });
 
-    if (!result.canceled && result.assets[0].uri) {
-      setPhotoUri(result.assets[0].uri);
-      await handlePhotoUpload(result.assets[0].uri);
-    } else {
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      if (!result.canceled && result.assets[0].uri) {
+        setPhotoUri(result.assets[0].uri);
+        await handlePhotoUpload(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Pick image error:', error);
+      Alert.alert('Lỗi', 'Không thể chọn ảnh: ' + error);
     }
   };
 
@@ -108,10 +114,13 @@ const ScanScreen = () => {
       {photoUri ? (
         <View style={styles.previewContainer}>
           <Image source={{ uri: photoUri }} style={styles.previewImage} />
-          <TouchableOpacity style={styles.retakeButton} onPress={() => {
-            setPhotoUri(null);
-            setTransactionData(null);
-          }}>
+          <TouchableOpacity
+            style={styles.retakeButton}
+            onPress={() => {
+              setPhotoUri(null);
+              setTransactionData(null);
+            }}
+          >
             <Ionicons name="arrow-undo-circle-outline" size={50} color="white" />
           </TouchableOpacity>
         </View>
@@ -120,7 +129,7 @@ const ScanScreen = () => {
           <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
             <Ionicons name="image-outline" size={40} color="white" />
           </TouchableOpacity>
-          <CameraView style={styles.camera} ref={cameraRef}>
+          <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
                 <Ionicons name="camera-reverse-outline" size={40} color="white" />
@@ -157,11 +166,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: '#000', // Optional: Dark background for better contrast
   },
   message: {
     textAlign: 'center',
     paddingBottom: 50,
     fontSize: 16,
+    color: '#fff',
   },
   cameraContainer: {
     flex: 1,
@@ -221,7 +232,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     borderRadius: 10,
-    marginTop: 20,
+    margin: 20,
     width: '90%',
     alignSelf: 'center',
   },
@@ -236,7 +247,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   loadingIndicator: {
-    marginTop: 10,
+    position: 'absolute',
+    top: '50%',
+    alignSelf: 'center',
   },
 });
 

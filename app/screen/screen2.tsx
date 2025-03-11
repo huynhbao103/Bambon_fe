@@ -1,10 +1,8 @@
-// Screen2.tsx
 import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   View,
   Text,
-  Image,
   Dimensions,
   Animated,
 } from "react-native";
@@ -15,6 +13,7 @@ const { width, height } = Dimensions.get("window");
 
 const Screen2: React.FC = () => {
   const [fadeAnim] = useState(new Animated.Value(0));
+
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -22,6 +21,7 @@ const Screen2: React.FC = () => {
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -47,6 +47,7 @@ const Screen2: React.FC = () => {
         Kiểm soát tài chính của bạn?
       </Text>
       <Animated.Image
+        testID="animated-image"
         source={images.handphone}
         style={{
           width: width - 40,
@@ -56,7 +57,7 @@ const Screen2: React.FC = () => {
         resizeMode="contain"
       />
       <Link
-        href="/pages/login" // Điều hướng về màn hình home
+        href="/pages/login"
         style={{
           backgroundColor: "#16A34A",
           paddingHorizontal: 32,
@@ -67,9 +68,11 @@ const Screen2: React.FC = () => {
       >
         <Text className="text-white text-lg font-bold">Tiếp tục</Text>
       </Link>
+      
+      {/* Pagination dots với testID để kiểm tra trong unit test */}
       <View className="flex-row mt-5">
-        <View className="w-3 h-3 rounded-full bg-gray-300 mx-1" />
-        <View className="w-3 h-3 rounded-full bg-green-700 mx-1" />
+        <View testID="pagination-dot-inactive" className="w-3 h-3 rounded-full bg-gray-300 mx-1" />
+        <View testID="pagination-dot-active" className="w-3 h-3 rounded-full bg-green-700 mx-1" />
       </View>
     </ScrollView>
   );

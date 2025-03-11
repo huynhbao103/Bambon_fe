@@ -14,8 +14,9 @@ const SplashScreen = () => {
     }).start();
   }, [fadeAnim]);
   return (
-    <View className="flex-1 bg-green-300 justify-center items-center">
+    <View testID="splash-container" className="flex-1 bg-green-300 justify-center items-center">
       <Animated.Image
+        testID="splash-image"
         source={images.splash}
         resizeMode={"contain"}
         style={{

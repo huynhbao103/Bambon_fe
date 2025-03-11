@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1741702977185" clover="3.2.0">
-  <project timestamp="1741702977186" name="All files">
+<coverage generated="1741703239509" clover="3.2.0">
+  <project timestamp="1741703239509" name="All files">
     <metrics statements="458" coveredstatements="17" conditionals="223" coveredconditionals="0" methods="117" coveredmethods="6" elements="798" coveredelements="23" complexity="0" loc="458" ncloc="458" packages="8" files="23" classes="23"/>
     <package name="Bambon_fe">
       <metrics statements="8" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>

@@ -23,4 +23,4 @@ describe("SplashScreen", () => {
         const { toJSON } = render(<SplashScreen />);
         expect(toJSON()).toMatchSnapshot();
     });
-});
+}); 

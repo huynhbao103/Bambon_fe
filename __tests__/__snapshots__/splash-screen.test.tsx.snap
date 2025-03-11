@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SplashScreen renders splash image correctly 1`] = `
+<View
+  className="flex-1 bg-green-300 justify-center items-center"
+  testID="splash-container"
+>
+  <Image
+    collapsable={false}
+    resizeMode="contain"
+    source={
+      {
+        "testUri": "../../../assets/images/splash.png",
+      }
+    }
+    style={
+      {
+        "height": "100%",
+        "opacity": 0,
+        "width": "100%",
+      }
+    }
+    testID="splash-image"
+  />
+</View>
+`;

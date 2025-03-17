@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "types": ["jest", "node"],
     "strict": true,
     "paths": {
       "@/*": [
@@ -14,4 +15,4 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]
-}
+} 

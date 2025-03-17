@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Link, useRouter } from 'expo-router';
@@ -56,8 +56,10 @@ import { BACKEND_URL } from '../../config';
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
       <Button title="Login" onPress={login} color="#32CD32" />
-      <Link href="/pages/register">
-        <Text style={styles.registerLink}>Go to Register</Text>
+      <Link href="/pages/register" asChild>
+        <Pressable style={styles.registerLink}>
+          <Text>Go to Register</Text>
+        </Pressable>
       </Link>
     </View>
   );

@@ -1,86 +1,85 @@
-// import React from "react";
-// import { render, fireEvent, waitFor, screen } from "@testing-library/react-native";
-// import LoginScreen from "../../app/pages/login";
-// import axios from "axios";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { useRouter } from "expo-router";
+import React from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { act } from 'react-test-renderer';
+import LoginScreen from '../../app/pages/login';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ExpoRouter from 'expo-router';
 
-// // Mock useRouter để kiểm tra điều hướng
-// jest.mock("expo-router", () => ({
-//     useRouter: () => ({
-//       push: jest.fn(),
-//     }),
-//   }));
+// Mock axios
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-// // Mock AsyncStorage
-// jest.mock("@react-native-async-storage/async-storage", () => ({
-//     setItem: jest.fn(),
-//     getItem: jest.fn(),
-//     removeItem: jest.fn(),
-//   }));
+// Mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(() => Promise.resolve()),
+  getItem: jest.fn(() => Promise.resolve(null)),
+}));
 
-// // Mock axios
-// jest.mock("axios");
+// Mock expo-router
+jest.mock('expo-router');
+const mockUseRouter = ExpoRouter.useRouter as jest.Mock;
 
-// describe("LoginScreen", () => {
-//   const mockRouterPush = jest.fn();
+describe('LoginScreen', () => {
+  const mockRouter = { push: jest.fn() };
 
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//     (useRouter as jest.Mock).mockReturnValue({ push: mockRouterPush });
-//   });
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseRouter.mockReturnValue(mockRouter);
+  });
 
-//   it("renders the login screen correctly", () => {
-//     render(<LoginScreen />);
-    
-//     expect(screen.getByPlaceholderText("Email")).toBeTruthy();
-//     expect(screen.getByPlaceholderText("Password")).toBeTruthy();
-//     expect(screen.getByText("Login")).toBeTruthy();
-//     expect(screen.getByText("Go to Register")).toBeTruthy();
-//   });
+  it('calls login function when Login button is pressed', async () => {
+    const { getByPlaceholderText, getByRole } = render(<LoginScreen />);
 
-//   it("updates state when user inputs email and password", () => {
-//     render(<LoginScreen />);
-    
-//     const emailInput = screen.getByPlaceholderText("Email");
-//     const passwordInput = screen.getByPlaceholderText("Password");
+    fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'correctpassword');
 
-//     fireEvent.changeText(emailInput, "test@example.com");
-//     fireEvent.changeText(passwordInput, "password123");
+    await act(async () => {
+      fireEvent.press(getByRole('button', { name: 'Login' }));
+    });
 
-//     expect(emailInput.props.value).toBe("test@example.com");
-//     expect(passwordInput.props.value).toBe("password123");
-//   });
+    await waitFor(() => {
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect.any(String),
+        {
+          email: 'test@example.com',
+          password: 'correctpassword',
+        }
+      );
+    });
+  });
 
-//   it("logs in successfully and navigates to home", async () => {
-//     (axios.post as jest.Mock).mockResolvedValue({ data: { token: "mockToken" } });
+  it('saves token to AsyncStorage and navigates to home on successful login', async () => {
+    const { getByPlaceholderText, getByRole } = render(<LoginScreen />);
 
-//     render(<LoginScreen />);
-    
-//     fireEvent.changeText(screen.getByPlaceholderText("Email"), "test@example.com");
-//     fireEvent.changeText(screen.getByPlaceholderText("Password"), "password123");
+    mockedAxios.post.mockResolvedValueOnce({
+      data: {
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+      }
+    });
 
-//     fireEvent.press(screen.getByText("Login"));
+    fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'correctpassword');
 
-//     await waitFor(() => expect(axios.post).toHaveBeenCalledWith(
-//       expect.stringContaining("/auth/login"),
-//       { email: "test@example.com", password: "password123" }
-//     ));
+    await act(async () => {
+      fireEvent.press(getByRole('button', { name: 'Login' }));
+    });
 
-//     await waitFor(() => expect(AsyncStorage.setItem).toHaveBeenCalledWith("token", "mockToken"));
-//     await waitFor(() => expect(mockRouterPush).toHaveBeenCalledWith("/(tabs)/home"));
-//   });
+    await waitFor(() => {
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        'token',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+      );
+      expect(mockRouter.push).toHaveBeenCalledWith('/(tabs)/home');
+    });
+  });
 
-//   it("shows an error message when login fails", async () => {
-//     (axios.post as jest.Mock).mockRejectedValue({ response: { data: { message: "Sai email hoặc mật khẩu!" } } });
-
-//     render(<LoginScreen />);
-    
-//     fireEvent.changeText(screen.getByPlaceholderText("Email"), "wrong@example.com");
-//     fireEvent.changeText(screen.getByPlaceholderText("Password"), "wrongpassword");
-
-//     fireEvent.press(screen.getByText("Login"));
-
-//     await waitFor(() => expect(screen.getByText("Sai email hoặc mật khẩu!")).toBeTruthy());
-//   });
-// });
+  it('navigates to register page when Go to Register link is pressed', async () => {
+    const { getByTestId, debug } = render(<LoginScreen />);
+  
+    debug();  
+  
+    const link = getByTestId('go-to-register-link');  
+    expect(link).toHaveProp('href', '/pages/register');
+  });
+});

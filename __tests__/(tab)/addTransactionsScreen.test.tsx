@@ -55,23 +55,36 @@ describe("AddTransactionScreen", () => {
       });
     });
  describe("UTCID02", ()=>{
-    it.each([
-        { testId: "income", type: "Thu nhập",error: "Vui lòng thêm ít nhất một mục chi tiêu." },
-        { testId: "expense", type: "Chi tiêu", error: "Vui lòng thêm ít nhất một mục chi tiêu." },
-      ])("Đã đăng nhập -> Chọn loại giao dịch %s -> Gửi giao dịch", async ({ testId, error }) => {
+    it("Đã đăng nhập -> Chọn loại giao dịch %s -> Gửi giao dịch", async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: { message: "" } });
     
         const { getByTestId, getByRole, findByText } = render(<AddTransactionScreen />);
     
         // Chọn loại giao dịch
-        fireEvent.press(getByTestId(`transaction-type-${testId}`));
+        fireEvent.press(getByTestId(`transaction-type-income`));
     
         // Nhấn gửi
         await act(async () => {
           fireEvent.press(getByRole("button", { name: "Gửi giao dịch" }));
         });
      
-        expect(Alert.alert).toHaveBeenCalledWith("Lỗi", error);
+        expect(Alert.alert).toHaveBeenCalledWith("Lỗi", "Vui lòng điền đầy đủ thông tin giao dịch.");
       });
     });
-});
+    it("Đã đăng nhập -> Chọn loại giao dịch %s -> Gửi giao dịch", async () => {
+      mockedAxios.post.mockResolvedValueOnce({ data: { message: "" } });
+  
+      const { getByTestId, getByRole, findByText } = render(<AddTransactionScreen />);
+  
+      // Chọn loại giao dịch
+      fireEvent.press(getByTestId(`transaction-type-expense`));
+  
+      // Nhấn gửi
+      await act(async () => {
+        fireEvent.press(getByRole("button", { name: "Gửi giao dịch" }));
+      });
+   
+      expect(Alert.alert).toHaveBeenCalledWith("Lỗi", "Vui lòng điền đầy đủ thông tin giao dịch.");
+    });
+  });
+

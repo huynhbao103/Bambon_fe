@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1742576113151" clover="3.2.0">
-  <project timestamp="1742576113151" name="All files">
-    <metrics statements="749" coveredstatements="84" conditionals="529" coveredconditionals="23" methods="170" coveredmethods="16" elements="1448" coveredelements="123" complexity="0" loc="749" ncloc="749" packages="11" files="30" classes="30"/>
+<coverage generated="1742577784943" clover="3.2.0">
+  <project timestamp="1742577784943" name="All files">
+    <metrics statements="749" coveredstatements="90" conditionals="529" coveredconditionals="37" methods="170" coveredmethods="18" elements="1448" coveredelements="145" complexity="0" loc="749" ncloc="749" packages="11" files="30" classes="30"/>
     <package name="Bambon_Fe">
       <metrics statements="8" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
       <file name="config.ts" path="D:\Code\VSCODE\BDCLPC\Bambon_Fe\config.ts">
@@ -54,7 +54,7 @@
       </file>
     </package>
     <package name="Bambon_Fe.app.(tabs)">
-      <metrics statements="443" coveredstatements="36" conditionals="319" coveredconditionals="14" methods="102" coveredmethods="6"/>
+      <metrics statements="443" coveredstatements="42" conditionals="319" coveredconditionals="28" methods="102" coveredmethods="8"/>
       <file name="BudgetScreen.tsx" path="D:\Code\VSCODE\BDCLPC\Bambon_Fe\app\(tabs)\BudgetScreen.tsx">
         <metrics statements="97" coveredstatements="0" conditionals="99" coveredconditionals="0" methods="20" coveredmethods="0"/>
         <line num="24" count="0" type="stmt"/>
@@ -384,20 +384,20 @@
         <line num="166" count="0" type="stmt"/>
       </file>
       <file name="settings.tsx" path="D:\Code\VSCODE\BDCLPC\Bambon_Fe\app\(tabs)\settings.tsx">
-        <metrics statements="127" coveredstatements="36" conditionals="93" coveredconditionals="14" methods="26" coveredmethods="6"/>
-        <line num="21" count="7" type="stmt"/>
-        <line num="22" count="6" type="stmt"/>
-        <line num="23" count="6" type="stmt"/>
-        <line num="24" count="6" type="stmt"/>
-        <line num="25" count="6" type="stmt"/>
-        <line num="26" count="6" type="stmt"/>
-        <line num="27" count="6" type="stmt"/>
-        <line num="28" count="6" type="stmt"/>
-        <line num="29" count="6" type="stmt"/>
-        <line num="31" count="6" type="stmt"/>
-        <line num="40" count="6" type="stmt"/>
-        <line num="48" count="6" type="stmt"/>
-        <line num="53" count="6" type="stmt"/>
+        <metrics statements="127" coveredstatements="42" conditionals="93" coveredconditionals="28" methods="26" coveredmethods="8"/>
+        <line num="21" count="8" type="stmt"/>
+        <line num="22" count="8" type="stmt"/>
+        <line num="23" count="8" type="stmt"/>
+        <line num="24" count="8" type="stmt"/>
+        <line num="25" count="8" type="stmt"/>
+        <line num="26" count="8" type="stmt"/>
+        <line num="27" count="8" type="stmt"/>
+        <line num="28" count="8" type="stmt"/>
+        <line num="29" count="8" type="stmt"/>
+        <line num="31" count="8" type="stmt"/>
+        <line num="40" count="8" type="stmt"/>
+        <line num="48" count="8" type="stmt"/>
+        <line num="53" count="8" type="stmt"/>
         <line num="54" count="3" type="stmt"/>
         <line num="55" count="3" type="stmt"/>
         <line num="56" count="3" type="stmt"/>
@@ -407,10 +407,10 @@
         <line num="63" count="0" type="stmt"/>
         <line num="64" count="0" type="stmt"/>
         <line num="67" count="3" type="stmt"/>
-        <line num="71" count="6" type="stmt"/>
-        <line num="72" count="3" type="cond" truecount="2" falsecount="2"/>
+        <line num="71" count="8" type="stmt"/>
+        <line num="72" count="5" type="cond" truecount="3" falsecount="1"/>
         <line num="73" count="0" type="stmt"/>
-        <line num="77" count="6" type="stmt"/>
+        <line num="77" count="8" type="stmt"/>
         <line num="78" count="0" type="stmt"/>
         <line num="80" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="81" count="0" type="stmt"/>
@@ -436,24 +436,24 @@
         <line num="118" count="0" type="stmt"/>
         <line num="122" count="0" type="stmt"/>
         <line num="123" count="0" type="stmt"/>
-        <line num="126" count="6" type="stmt"/>
+        <line num="126" count="8" type="stmt"/>
         <line num="127" count="0" type="stmt"/>
-        <line num="130" count="6" type="stmt"/>
+        <line num="130" count="8" type="stmt"/>
         <line num="131" count="0" type="stmt"/>
         <line num="132" count="0" type="stmt"/>
         <line num="133" count="0" type="stmt"/>
-        <line num="136" count="6" type="stmt"/>
+        <line num="136" count="8" type="stmt"/>
         <line num="137" count="0" type="stmt"/>
         <line num="138" count="0" type="stmt"/>
         <line num="139" count="0" type="stmt"/>
-        <line num="142" count="6" type="stmt"/>
+        <line num="142" count="8" type="stmt"/>
         <line num="143" count="0" type="stmt"/>
         <line num="144" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="145" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="146" count="0" type="stmt"/>
-        <line num="150" count="6" type="stmt"/>
+        <line num="150" count="8" type="stmt"/>
         <line num="151" count="0" type="stmt"/>
-        <line num="154" count="6" type="stmt"/>
+        <line num="154" count="8" type="stmt"/>
         <line num="155" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="156" count="0" type="stmt"/>
         <line num="157" count="0" type="stmt"/>
@@ -470,10 +470,10 @@
         <line num="175" count="0" type="stmt"/>
         <line num="176" count="0" type="stmt"/>
         <line num="177" count="0" type="stmt"/>
-        <line num="180" count="6" type="stmt"/>
-        <line num="181" count="1" type="cond" truecount="2" falsecount="3"/>
-        <line num="182" count="1" type="stmt"/>
-        <line num="183" count="1" type="stmt"/>
+        <line num="180" count="8" type="stmt"/>
+        <line num="181" count="3" type="cond" truecount="2" falsecount="3"/>
+        <line num="182" count="3" type="stmt"/>
+        <line num="183" count="3" type="stmt"/>
         <line num="186" count="0" type="stmt"/>
         <line num="188" count="0" type="stmt"/>
         <line num="189" count="0" type="stmt"/>
@@ -488,7 +488,7 @@
         <line num="210" count="0" type="stmt"/>
         <line num="211" count="0" type="stmt"/>
         <line num="213" count="0" type="stmt"/>
-        <line num="217" count="6" type="stmt"/>
+        <line num="217" count="8" type="stmt"/>
         <line num="218" count="0" type="stmt"/>
         <line num="219" count="0" type="stmt"/>
         <line num="220" count="0" type="stmt"/>
@@ -496,22 +496,22 @@
         <line num="222" count="0" type="stmt"/>
         <line num="223" count="0" type="stmt"/>
         <line num="224" count="0" type="stmt"/>
-        <line num="227" count="6" type="stmt"/>
-        <line num="240" count="12" type="stmt"/>
-        <line num="244" count="0" type="stmt"/>
-        <line num="245" count="0" type="stmt"/>
-        <line num="246" count="0" type="stmt"/>
-        <line num="247" count="0" type="stmt"/>
-        <line num="248" count="0" type="stmt"/>
-        <line num="265" count="0" type="stmt"/>
-        <line num="268" count="0" type="stmt"/>
-        <line num="286" count="0" type="stmt"/>
-        <line num="340" count="0" type="stmt"/>
-        <line num="344" count="0" type="stmt"/>
-        <line num="358" count="0" type="stmt"/>
-        <line num="369" count="0" type="stmt"/>
-        <line num="379" count="0" type="stmt"/>
-        <line num="409" count="1" type="stmt"/>
+        <line num="227" count="8" type="stmt"/>
+        <line num="240" count="16" type="stmt"/>
+        <line num="245" count="2" type="stmt"/>
+        <line num="246" count="2" type="stmt"/>
+        <line num="247" count="2" type="stmt"/>
+        <line num="248" count="2" type="stmt"/>
+        <line num="249" count="2" type="stmt"/>
+        <line num="266" count="22" type="stmt"/>
+        <line num="269" count="0" type="stmt"/>
+        <line num="287" count="0" type="stmt"/>
+        <line num="341" count="0" type="stmt"/>
+        <line num="345" count="0" type="stmt"/>
+        <line num="359" count="0" type="stmt"/>
+        <line num="370" count="0" type="stmt"/>
+        <line num="380" count="0" type="stmt"/>
+        <line num="410" count="1" type="stmt"/>
       </file>
     </package>
     <package name="Bambon_Fe.app.components">

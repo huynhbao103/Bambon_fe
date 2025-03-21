@@ -238,6 +238,7 @@ export default function AddTransactionScreen() {
         <View style={styles.typeContainer}>
           {transactionTypes.map((typeOption, index) => (
             <TouchableOpacity
+            testID={`transaction-type-${typeOption.value}`}
               key={index}
               style={[styles.typeButton, type === typeOption.value && styles.selectedType]}
               onPress={() => {
@@ -586,6 +587,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: '30%',
+    color: "#000",
     paddingVertical: 12,
     backgroundColor: "#F0FFF4",
     borderStyle: "dashed",

@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1742244280785" clover="3.2.0">
-  <project timestamp="1742244280785" name="All files">
-    <metrics statements="467" coveredstatements="48" conditionals="227" coveredconditionals="6" methods="120" coveredmethods="9" elements="814" coveredelements="63" complexity="0" loc="467" ncloc="467" packages="8" files="25" classes="25"/>
+<coverage generated="1742571066821" clover="3.2.0">
+  <project timestamp="1742571066821" name="All files">
+    <metrics statements="458" coveredstatements="2" conditionals="222" coveredconditionals="0" methods="117" coveredmethods="0" elements="797" coveredelements="2" complexity="0" loc="458" ncloc="458" packages="8" files="24" classes="24"/>
     <package name="Bambon_fe">
-      <metrics statements="17" coveredstatements="1" conditionals="8" coveredconditionals="0" methods="5" coveredmethods="0"/>
-      <file name="config.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\config.ts">
+      <metrics statements="8" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
+      <file name="config.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\config.ts">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
       </file>
-      <file name="image.d.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\image.d.ts">
+      <file name="image.d.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\image.d.ts">
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       </file>
-      <file name="jest.config.js" path="D:\DamBaoChatLuong\183\Bambon_fe\jest.config.js">
+      <file name="jest.config.js" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\jest.config.js">
         <metrics statements="1" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
       </file>
-      <file name="jest.setup.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\jest.setup.tsx">
-        <metrics statements="9" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="4" count="0" type="stmt"/>
-        <line num="5" count="0" type="stmt"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="16" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="20" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-      </file>
-      <file name="jestSetup.js" path="D:\DamBaoChatLuong\183\Bambon_fe\jestSetup.js">
+      <file name="jestSetup.js" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\jestSetup.js">
         <metrics statements="6" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
         <line num="4" count="0" type="stmt"/>
         <line num="15" count="0" type="stmt"/>
@@ -38,8 +26,8 @@
       </file>
     </package>
     <package name="Bambon_fe.app">
-      <metrics statements="16" coveredstatements="5" conditionals="6" coveredconditionals="0" methods="5" coveredmethods="2"/>
-      <file name="_layout.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\_layout.tsx">
+      <metrics statements="16" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="5" coveredmethods="0"/>
+      <file name="_layout.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\_layout.tsx">
         <metrics statements="9" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="2" coveredmethods="0"/>
         <line num="13" count="0" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
@@ -51,23 +39,23 @@
         <line num="28" count="0" type="stmt"/>
         <line num="31" count="0" type="stmt"/>
       </file>
-      <file name="index.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\index.tsx">
+      <file name="index.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\index.tsx">
         <metrics statements="2" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="6" count="0" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
       </file>
-      <file name="splash-screen.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\splash-screen.tsx">
-        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="7" count="2" type="stmt"/>
-        <line num="9" count="2" type="stmt"/>
-        <line num="10" count="2" type="stmt"/>
-        <line num="16" count="2" type="stmt"/>
+      <file name="splash-screen.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\splash-screen.tsx">
+        <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
       </file>
     </package>
     <package name="Bambon_fe.app.(tabs)">
-      <metrics statements="329" coveredstatements="0" conditionals="187" coveredconditionals="0" methods="95" coveredmethods="0"/>
-      <file name="BudgetScreen.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\(tabs)\BudgetScreen.tsx">
+      <metrics statements="329" coveredstatements="1" conditionals="186" coveredconditionals="0" methods="95" coveredmethods="0"/>
+      <file name="BudgetScreen.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\(tabs)\BudgetScreen.tsx">
         <metrics statements="31" coveredstatements="0" conditionals="13" coveredconditionals="0" methods="4" coveredmethods="0"/>
         <line num="21" count="0" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
@@ -101,7 +89,7 @@
         <line num="66" count="0" type="stmt"/>
         <line num="87" count="0" type="stmt"/>
       </file>
-      <file name="_layout.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\(tabs)\_layout.tsx">
+      <file name="_layout.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\(tabs)\_layout.tsx">
         <metrics statements="8" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="5" coveredmethods="0"/>
         <line num="12" count="0" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
@@ -112,7 +100,7 @@
         <line num="55" count="0" type="stmt"/>
         <line num="64" count="0" type="stmt"/>
       </file>
-      <file name="home.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\(tabs)\home.tsx">
+      <file name="home.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\(tabs)\home.tsx">
         <metrics statements="151" coveredstatements="0" conditionals="92" coveredconditionals="0" methods="58" coveredmethods="0"/>
         <line num="39" count="0" type="stmt"/>
         <line num="40" count="0" type="stmt"/>
@@ -266,7 +254,7 @@
         <line num="571" count="0" type="stmt"/>
         <line num="590" count="0" type="stmt"/>
       </file>
-      <file name="scan.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\(tabs)\scan.tsx">
+      <file name="scan.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\(tabs)\scan.tsx">
         <metrics statements="61" coveredstatements="0" conditionals="35" coveredconditionals="0" methods="10" coveredmethods="0"/>
         <line num="12" count="0" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
@@ -327,11 +315,11 @@
         <line num="112" count="0" type="stmt"/>
         <line num="120" count="0" type="stmt"/>
         <line num="121" count="0" type="stmt"/>
-        <line num="153" count="0" type="stmt"/>
-        <line num="165" count="0" type="stmt"/>
+        <line num="154" count="0" type="stmt"/>
+        <line num="166" count="0" type="stmt"/>
       </file>
-      <file name="settings.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\(tabs)\settings.tsx">
-        <metrics statements="78" coveredstatements="0" conditionals="45" coveredconditionals="0" methods="18" coveredmethods="0"/>
+      <file name="settings.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\(tabs)\settings.tsx">
+        <metrics statements="78" coveredstatements="1" conditionals="44" coveredconditionals="0" methods="18" coveredmethods="0"/>
         <line num="20" count="0" type="stmt"/>
         <line num="21" count="0" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
@@ -376,7 +364,7 @@
         <line num="92" count="0" type="stmt"/>
         <line num="93" count="0" type="stmt"/>
         <line num="96" count="0" type="stmt"/>
-        <line num="97" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="97" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="98" count="0" type="stmt"/>
         <line num="99" count="0" type="stmt"/>
         <line num="102" count="0" type="cond" truecount="0" falsecount="4"/>
@@ -397,46 +385,46 @@
         <line num="130" count="0" type="stmt"/>
         <line num="131" count="0" type="stmt"/>
         <line num="135" count="0" type="stmt"/>
-        <line num="147" count="0" type="stmt"/>
-        <line num="151" count="0" type="stmt"/>
-        <line num="152" count="0" type="stmt"/>
+        <line num="148" count="0" type="stmt"/>
         <line num="153" count="0" type="stmt"/>
         <line num="154" count="0" type="stmt"/>
-        <line num="169" count="0" type="stmt"/>
-        <line num="172" count="0" type="stmt"/>
-        <line num="183" count="0" type="stmt"/>
-        <line num="226" count="0" type="stmt"/>
-        <line num="231" count="0" type="stmt"/>
-        <line num="237" count="0" type="stmt"/>
-        <line num="244" count="0" type="stmt"/>
-        <line num="266" count="0" type="stmt"/>
+        <line num="155" count="0" type="stmt"/>
+        <line num="156" count="0" type="stmt"/>
+        <line num="171" count="0" type="stmt"/>
+        <line num="175" count="0" type="stmt"/>
+        <line num="187" count="0" type="stmt"/>
+        <line num="232" count="0" type="stmt"/>
+        <line num="238" count="0" type="stmt"/>
+        <line num="245" count="0" type="stmt"/>
+        <line num="253" count="0" type="stmt"/>
+        <line num="275" count="1" type="stmt"/>
       </file>
     </package>
     <package name="Bambon_fe.app.pages">
-      <metrics statements="36" coveredstatements="19" conditionals="14" coveredconditionals="5" methods="4" coveredmethods="2"/>
-      <file name="login.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\pages\login.tsx">
-        <metrics statements="19" coveredstatements="19" conditionals="6" coveredconditionals="5" methods="2" coveredmethods="2"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="8" type="stmt"/>
-        <line num="11" count="8" type="stmt"/>
-        <line num="12" count="8" type="stmt"/>
-        <line num="13" count="8" type="stmt"/>
-        <line num="15" count="8" type="stmt"/>
-        <line num="16" count="2" type="stmt"/>
-        <line num="17" count="2" type="stmt"/>
-        <line num="19" count="2" type="stmt"/>
-        <line num="24" count="2" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="36" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="37" count="1" type="cond" truecount="2" falsecount="0"/>
-        <line num="41" count="8" type="stmt"/>
-        <line num="68" count="1" type="stmt"/>
+      <metrics statements="36" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="4" coveredmethods="0"/>
+      <file name="login.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\pages\login.tsx">
+        <metrics statements="19" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="36" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
       </file>
-      <file name="register.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\pages\register.tsx">
+      <file name="register.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\pages\register.tsx">
         <metrics statements="17" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="2" coveredmethods="0"/>
         <line num="7" count="0" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
@@ -458,48 +446,48 @@
       </file>
     </package>
     <package name="Bambon_fe.app.screen">
-      <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
-      <file name="screen1.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\screen\screen1.tsx">
-        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
-        <line num="13" count="1" type="stmt"/>
-        <line num="15" count="1" type="stmt"/>
-        <line num="16" count="5" type="stmt"/>
-        <line num="18" count="5" type="stmt"/>
-        <line num="19" count="5" type="stmt"/>
-        <line num="26" count="5" type="stmt"/>
+      <metrics statements="12" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
+      <file name="screen1.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\screen\screen1.tsx">
+        <metrics statements="6" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
       </file>
-      <file name="screen2.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\app\screen\screen2.tsx">
-        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
-        <line num="12" count="1" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
-        <line num="15" count="5" type="stmt"/>
-        <line num="17" count="4" type="stmt"/>
-        <line num="18" count="4" type="stmt"/>
-        <line num="25" count="4" type="stmt"/>
+      <file name="screen2.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\app\screen\screen2.tsx">
+        <metrics statements="6" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
       </file>
     </package>
     <package name="Bambon_fe.constants">
       <metrics statements="4" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="Colors.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\constants\Colors.ts">
+      <file name="Colors.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\constants\Colors.ts">
         <metrics statements="3" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="6" count="0" type="stmt"/>
         <line num="7" count="0" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
       </file>
-      <file name="icons.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\constants\icons.ts">
+      <file name="icons.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\constants\icons.ts">
         <metrics statements="1" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
       </file>
-      <file name="images.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\constants\images.ts">
+      <file name="images.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\constants\images.ts">
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       </file>
     </package>
     <package name="Bambon_fe.hooks">
       <metrics statements="12" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="3" coveredmethods="0"/>
-      <file name="useColorScheme.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\hooks\useColorScheme.ts">
+      <file name="useColorScheme.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\hooks\useColorScheme.ts">
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       </file>
-      <file name="useColorScheme.web.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\hooks\useColorScheme.web.ts">
+      <file name="useColorScheme.web.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\hooks\useColorScheme.web.ts">
         <metrics statements="7" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
         <line num="8" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
@@ -509,7 +497,7 @@
         <line num="17" count="0" type="stmt"/>
         <line num="20" count="0" type="stmt"/>
       </file>
-      <file name="useThemeColor.ts" path="D:\DamBaoChatLuong\183\Bambon_fe\hooks\useThemeColor.ts">
+      <file name="useThemeColor.ts" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\hooks\useThemeColor.ts">
         <metrics statements="5" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="13" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="14" count="0" type="stmt"/>
@@ -519,36 +507,36 @@
       </file>
     </package>
     <package name="Bambon_fe.schema">
-      <metrics statements="41" coveredstatements="11" conditionals="6" coveredconditionals="1" methods="4" coveredmethods="1"/>
-      <file name="authen.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\schema\authen.tsx">
-        <metrics statements="25" coveredstatements="11" conditionals="2" coveredconditionals="1" methods="3" coveredmethods="1"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="10" count="1" type="cond" truecount="1" falsecount="1"/>
+      <metrics statements="41" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="4" coveredmethods="0"/>
+      <file name="authen.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\schema\authen.tsx">
+        <metrics statements="25" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="11" count="0" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
         <line num="24" count="0" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
         <line num="30" count="0" type="stmt"/>
         <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
         <line num="33" count="0" type="stmt"/>
         <line num="35" count="0" type="stmt"/>
         <line num="36" count="0" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
         <line num="42" count="0" type="stmt"/>
         <line num="43" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
         <line num="45" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
       </file>
-      <file name="uploadPhoto.tsx" path="D:\DamBaoChatLuong\183\Bambon_fe\schema\uploadPhoto.tsx">
+      <file name="uploadPhoto.tsx" path="D:\DamBaoChatLuong\dambaochatluong\Bambon_fe\schema\uploadPhoto.tsx">
         <metrics statements="16" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="17" count="0" type="stmt"/>
         <line num="18" count="0" type="stmt"/>

@@ -30,21 +30,21 @@ const ScanScreen = () => {
   }, []);
 
   if (!permission) {
-    return <View />;
+    return <View testID="loading-screen" />;
   }
 
   if (!permission.granted) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} testID="camera-permission-screen">
         <Text style={styles.message}>Chúng tôi cần quyền truy cập camera</Text>
-        <Button onPress={requestPermission} title="Cấp quyền" />
+        <Button onPress={requestPermission} title="Cấp quyền" testID="grant-permission-button" />
       </SafeAreaView>
     );
   }
 
   if (!userId) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} testID="login-required-screen">
         <Text style={styles.message}>Bạn cần đăng nhập để sử dụng tính năng này.</Text>
       </SafeAreaView>
     );
@@ -110,31 +110,32 @@ const ScanScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} testID="scan-screen">
       {photoUri ? (
-        <View style={styles.previewContainer}>
-          <Image source={{ uri: photoUri }} style={styles.previewImage} />
+        <View style={styles.previewContainer} testID="photo-preview">
+          <Image source={{ uri: photoUri }} style={styles.previewImage} testID="preview-image" />
           <TouchableOpacity
             style={styles.retakeButton}
             onPress={() => {
               setPhotoUri(null);
               setTransactionData(null);
             }}
+            testID="retake-photo-button"
           >
             <Ionicons name="arrow-undo-circle-outline" size={50} color="white" />
           </TouchableOpacity>
         </View>
       ) : (
-        <View style={styles.cameraContainer}>
-          <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
+        <View style={styles.cameraContainer} testID="camera-container">
+          <TouchableOpacity style={styles.galleryButton} onPress={pickImage} testID="pick-image-button">
             <Ionicons name="image-outline" size={40} color="white" />
           </TouchableOpacity>
-          <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+          <CameraView style={styles.camera} facing={facing} ref={cameraRef} testID="camera-view">
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
+              <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing} testID="flip-camera-button">
                 <Ionicons name="camera-reverse-outline" size={40} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+              <TouchableOpacity style={styles.captureButton} onPress={takePicture} testID="capture-button">
                 <Ionicons name="camera-outline" size={50} color="black" />
               </TouchableOpacity>
             </View>
@@ -142,15 +143,15 @@ const ScanScreen = () => {
         </View>
       )}
 
-      {loading && <ActivityIndicator size="large" color="#fff" style={styles.loadingIndicator} />}
+      {loading && <ActivityIndicator size="large" color="#fff" style={styles.loadingIndicator} testID="loading-indicator" />}
       {transactionData && !loading && (
-        <View style={styles.resultContainer}>
+        <View style={styles.resultContainer} testID="transaction-data-container">
           <Text style={styles.resultText}>Dữ liệu giao dịch:</Text>
           <Text style={styles.recognizedText}>Loại: {transactionData.type}</Text>
           <Text style={styles.recognizedText}>Danh mục: {transactionData.category}</Text>
           <Text style={styles.recognizedText}>Sản phẩm:</Text>
           {transactionData.items.map((item: any, index: number) => (
-            <Text key={index} style={styles.recognizedText}>
+            <Text key={index} style={styles.recognizedText} testID={`transaction-item-${index}`}>
               - {item.productName}: {item.quantity} x {item.price} VNĐ
             </Text>
           ))}

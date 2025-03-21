@@ -31,14 +31,14 @@ export default function AddTransactionScreen() {
     { name: "Du lịch", icon: "plane" },
   ]);
   const [incomeCategories, setIncomeCategories] = useState([
-    { name: "Lương", icon: "money" },
+    { testId:"lương", name: "Lương", icon: "money" },
     { name: "Thưởng", icon: "gift" },
     { name: "Đầu tư", icon: "briefcase" },
   ]);
 
   const transactionTypes = [
-    { name: "Thu nhập", value: "income" },
-    { name: "Chi tiêu", value: "expense" },
+    { testId: "income", name: "Thu nhập", value: "income" },
+    { testId: "expense", name: "Chi tiêu", value: "expense" },
   ];
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function AddTransactionScreen() {
   };
 
   const submitTransaction = async () => {
-    if (!userId || !category || !type) {
+    if ( !category || !type) {
       Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin giao dịch.");
       return;
     }
@@ -136,17 +136,19 @@ export default function AddTransactionScreen() {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={styles.container}
+      testID="keyboard-avoiding-view"
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Thêm giao dịch mới</Text>
-
+      <ScrollView contentContainerStyle={styles.scrollContent} testID="scroll-view">
+        <Text style={styles.title} testID="title-text">Thêm giao dịch mới</Text>
+  
         {/* Loại giao dịch */}
-        <Text style={styles.label}>Loại giao dịch</Text>
-        <View style={styles.box}>
+        <Text style={styles.label} testID="transaction-type-label">Loại giao dịch</Text>
+        <View style={styles.box} testID="transaction-type-box">
           {transactionTypes.map((typeOption, index) => (
             <TouchableOpacity
               key={index}
               style={styles.listItem}
+              testID={`transaction-type-${typeOption.value}`}
               onPress={() => {
                 setType(typeOption.value);
                 setCategory("");
@@ -159,16 +161,17 @@ export default function AddTransactionScreen() {
             </TouchableOpacity>
           ))}
         </View>
-
+  
         {/* Danh mục giao dịch */}
         {type && (
           <>
-            <Text style={styles.label}>Danh mục</Text>
-            <View style={styles.box}>
+            <Text style={styles.label} testID="category-label">Danh mục</Text>
+            <View style={styles.box} testID="category-box">
               {(type === "income" ? incomeCategories : expenseCategories).map((categoryOption, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.listItem}
+                  testID={`category-${categoryOption.name}`}
                   onPress={() => setCategory(categoryOption.name)}
                 >
                   <Icon name={categoryOption.icon} size={20} color="#007AFF" style={styles.iconLeft} />
@@ -180,36 +183,39 @@ export default function AddTransactionScreen() {
               ))}
               <TouchableOpacity
                 style={styles.listItem}
+                testID="add-custom-category"
                 onPress={() => setShowCustomCategoryInput(!showCustomCategoryInput)}
               >
                 <Icon name="plus" size={20} color="#007AFF" style={styles.iconLeft} />
                 <Text>Thêm danh mục mới</Text>
               </TouchableOpacity>
             </View>
-
+  
             {/* Ô nhập danh mục tùy chỉnh */}
             {showCustomCategoryInput && (
-              <View style={styles.customCategoryContainer}>
+              <View style={styles.customCategoryContainer} testID="custom-category-input-container">
                 <TextInput
                   style={styles.input}
+                  testID="custom-category-input"
                   placeholder="Nhập danh mục mới"
                   value={customCategory}
                   onChangeText={setCustomCategory}
                 />
-                <Button type="primary" style={styles.addCategoryButton} onPress={addCustomCategory}>
+                <Button type="primary" style={styles.addCategoryButton} testID="add-category-button" onPress={addCustomCategory}>
                   Thêm
                 </Button>
               </View>
             )}
           </>
         )}
-
+  
         {/* Số tiền */}
         {type === "income" && (
           <>
-            <Text style={styles.label}>Số tiền</Text>
+            <Text style={styles.label} testID="amount-label">Số tiền</Text>
             <TextInput
               style={styles.input}
+              testID="amount-input"
               placeholder="Nhập số tiền"
               value={amount}
               onChangeText={setAmount}
@@ -217,21 +223,23 @@ export default function AddTransactionScreen() {
             />
           </>
         )}
-
+  
         {/* Mục chi tiêu */}
         {type === "expense" && (
           <>
-            <Text style={styles.subTitle}>Chi tiết mục chi tiêu</Text>
+            <Text style={styles.subTitle} testID="expense-title">Chi tiết mục chi tiêu</Text>
             {items.map((item, index) => (
-              <View key={index} style={styles.itemContainer}>
+              <View key={index} style={styles.itemContainer} testID={`expense-item-${index}`}>
                 <TextInput
                   style={styles.input}
+                  testID={`name-product-${index}`}
                   placeholder="Tên sản phẩm"
                   value={item.productName}
                   onChangeText={(value) => updateItem(index, "productName", value)}
                 />
                 <TextInput
                   style={styles.input}
+                  testID={`quantity-input-${index}`}
                   placeholder="Số lượng"
                   value={item.quantity}
                   onChangeText={(value) => updateItem(index, "quantity", value)}
@@ -239,6 +247,7 @@ export default function AddTransactionScreen() {
                 />
                 <TextInput
                   style={styles.input}
+                  testID={`price-input-${index}`}
                   placeholder="Giá tiền"
                   value={item.price}
                   onChangeText={(value) => updateItem(index, "price", value)}
@@ -246,16 +255,16 @@ export default function AddTransactionScreen() {
                 />
               </View>
             ))}
-
-            <Text style={styles.totalAmount}>Tổng tiền: {calculateTotalAmount()} VND</Text>
-
-            <Button type="ghost" style={styles.button} onPress={addItem}>
+  
+            <Text style={styles.totalAmount} testID="total-amount">Tổng tiền: {calculateTotalAmount()} VND</Text>
+  
+            <Button testID="add-item-button" type="ghost" style={styles.button} onPress={addItem}>
               Thêm mục chi tiêu
             </Button>
           </>
         )}
-
-        <Button type="primary" style={styles.submitButton} onPress={submitTransaction}>
+  
+        <Button type="primary" style={styles.submitButton} testID="submit-transaction" onPress={submitTransaction}>
           Gửi giao dịch
         </Button>
       </ScrollView>

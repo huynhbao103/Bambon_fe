@@ -318,7 +318,8 @@
 <a name='L253'></a><a href='#L253'>253</a>
 <a name='L254'></a><a href='#L254'>254</a>
 <a name='L255'></a><a href='#L255'>255</a>
-<a name='L256'></a><a href='#L256'>256</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -439,6 +440,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -605,21 +607,21 @@ const ScanScreen = <span class="cstat-no" title="statement not covered" ><span c
   }, []);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  if (!permission) {</span>
-<span class="cstat-no" title="statement not covered" >    return &lt;View /&gt;;</span>
+<span class="cstat-no" title="statement not covered" >    return &lt;View testID="loading-screen" /&gt;;</span>
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  if (!permission.granted) {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
-      &lt;SafeAreaView style={styles.container}&gt;
+      &lt;SafeAreaView style={styles.container} testID="camera-permission-screen"&gt;
         &lt;Text style={styles.message}&gt;Chúng tôi cần quyền truy cập camera&lt;/Text&gt;
-        &lt;Button onPress={requestPermission} title="Cấp quyền" /&gt;
+        &lt;Button onPress={requestPermission} title="Cấp quyền" testID="grant-permission-button" /&gt;
       &lt;/SafeAreaView&gt;
     );
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  if (!userId) {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
-      &lt;SafeAreaView style={styles.container}&gt;
+      &lt;SafeAreaView style={styles.container} testID="login-required-screen"&gt;
         &lt;Text style={styles.message}&gt;Bạn cần đăng nhập để sử dụng tính năng này.&lt;/Text&gt;
       &lt;/SafeAreaView&gt;
     );
@@ -685,31 +687,32 @@ const ScanScreen = <span class="cstat-no" title="statement not covered" ><span c
   };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
-    &lt;SafeAreaView style={styles.container}&gt;
+    &lt;SafeAreaView style={styles.container} testID="scan-screen"&gt;
       {photoUri ? (
-        &lt;View style={styles.previewContainer}&gt;
-          &lt;Image source={{ uri: photoUri }} style={styles.previewImage} /&gt;
+        &lt;View style={styles.previewContainer} testID="photo-preview"&gt;
+          &lt;Image source={{ uri: photoUri }} style={styles.previewImage} testID="preview-image" /&gt;
           &lt;TouchableOpacity
             style={styles.retakeButton}
             onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; {
 <span class="cstat-no" title="statement not covered" >              setPhotoUri(null);</span>
 <span class="cstat-no" title="statement not covered" >              setTransactionData(null);</span>
             }}
+            testID="retake-photo-button"
           &gt;
             &lt;Ionicons name="arrow-undo-circle-outline" size={50} color="white" /&gt;
           &lt;/TouchableOpacity&gt;
         &lt;/View&gt;
       ) : (
-        &lt;View style={styles.cameraContainer}&gt;
-          &lt;TouchableOpacity style={styles.galleryButton} onPress={pickImage}&gt;
+        &lt;View style={styles.cameraContainer} testID="camera-container"&gt;
+          &lt;TouchableOpacity style={styles.galleryButton} onPress={pickImage} testID="pick-image-button"&gt;
             &lt;Ionicons name="image-outline" size={40} color="white" /&gt;
           &lt;/TouchableOpacity&gt;
-          &lt;CameraView style={styles.camera} facing={facing} ref={cameraRef}&gt;
+          &lt;CameraView style={styles.camera} facing={facing} ref={cameraRef} testID="camera-view"&gt;
             &lt;View style={styles.buttonContainer}&gt;
-              &lt;TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}&gt;
+              &lt;TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing} testID="flip-camera-button"&gt;
                 &lt;Ionicons name="camera-reverse-outline" size={40} color="white" /&gt;
               &lt;/TouchableOpacity&gt;
-              &lt;TouchableOpacity style={styles.captureButton} onPress={takePicture}&gt;
+              &lt;TouchableOpacity style={styles.captureButton} onPress={takePicture} testID="capture-button"&gt;
                 &lt;Ionicons name="camera-outline" size={50} color="black" /&gt;
               &lt;/TouchableOpacity&gt;
             &lt;/View&gt;
@@ -717,15 +720,15 @@ const ScanScreen = <span class="cstat-no" title="statement not covered" ><span c
         &lt;/View&gt;
       )}
 &nbsp;
-      {loading &amp;&amp; &lt;ActivityIndicator size="large" color="#fff" style={styles.loadingIndicator} /&gt;}
+      {loading &amp;&amp; &lt;ActivityIndicator size="large" color="#fff" style={styles.loadingIndicator} testID="loading-indicator" /&gt;}
       {transactionData &amp;&amp; !loading &amp;&amp; (
-        &lt;View style={styles.resultContainer}&gt;
+        &lt;View style={styles.resultContainer} testID="transaction-data-container"&gt;
           &lt;Text style={styles.resultText}&gt;Dữ liệu giao dịch:&lt;/Text&gt;
           &lt;Text style={styles.recognizedText}&gt;Loại: {transactionData.type}&lt;/Text&gt;
           &lt;Text style={styles.recognizedText}&gt;Danh mục: {transactionData.category}&lt;/Text&gt;
           &lt;Text style={styles.recognizedText}&gt;Sản phẩm:&lt;/Text&gt;
           {transactionData.items.map(<span class="fstat-no" title="function not covered" >(i</span>tem: any, index: number) =&gt; (
-<span class="cstat-no" title="statement not covered" >            &lt;Text key={index} style={styles.recognizedText}&gt;</span>
+<span class="cstat-no" title="statement not covered" >            &lt;Text key={index} style={styles.recognizedText} testID={`transaction-item-${index}`}&gt;</span>
               - {item.productName}: {item.quantity} x {item.price} VNĐ
             &lt;/Text&gt;
           ))}
@@ -835,7 +838,7 @@ export default ScanScreen;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-11T14:27:19.391Z
+                at 2025-03-21T16:05:09.074Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

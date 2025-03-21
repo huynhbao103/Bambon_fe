@@ -1,17 +1,16 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, TouchableOpacity, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
 import { useColorScheme } from '../../hooks/useColorScheme';
 import { StatusBar } from 'expo-status-bar';
-import { Link } from 'expo-router';  
+
 
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
-
+  
   return (
     <>
       <StatusBar style="auto" />
@@ -61,16 +60,16 @@ export default function TabLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  cameraButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: Colors.light.tint,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 20,
-    zIndex: 10,
-  },
-});
+// const styles = StyleSheet.create({
+//   cameraButton: {
+//     width: 60,
+//     height: 60,
+//     borderRadius: 30,
+//     backgroundColor: Colors.light.tint,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     position: 'absolute',
+//     bottom: 20,
+//     zIndex: 10,
+//   },
+// });

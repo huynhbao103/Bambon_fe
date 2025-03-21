@@ -1,5 +1,6 @@
+/* global jest */
 import { NativeModules } from 'react-native';
-
+/* eslint-env jest */
 // Mock SettingsManager cho Expo
 NativeModules.SettingsManager = {
   getConstants: () => ({
@@ -19,7 +20,7 @@ const mockAppearance = {
 
 jest.spyOn(require('react-native').Appearance || {}, 'getColorScheme').mockImplementation(mockAppearance.getColorScheme);
 jest.spyOn(require('react-native').Appearance || {}, 'addChangeListener').mockImplementation(mockAppearance.addChangeListener);
-
+ 
 // Mock AsyncStorage
 const mockAsyncStorage = {
   setItem: jest.fn(),

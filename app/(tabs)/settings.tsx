@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,27 +19,35 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function AddTransactionScreen() {
   const [userId, setUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [type, setType] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [items, setItems] = useState<{ productName: string; quantity: string; price: string }[]>([]);
-  const [customCategory, setCustomCategory] = useState<string>(""); // Danh mục tùy chỉnh
-  const [showCustomCategoryInput, setShowCustomCategoryInput] = useState<boolean>(false); // Hiển thị ô nhập danh mục
+  const [customCategory, setCustomCategory] = useState<string>("");
+  const [showCustomCategoryInput, setShowCustomCategoryInput] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  
   const [expenseCategories, setExpenseCategories] = useState([
     { name: "Ăn uống", icon: "cutlery" },
     { name: "Mua sắm", icon: "shopping-cart" },
     { name: "Giải trí", icon: "gamepad" },
     { name: "Du lịch", icon: "plane" },
+    { name: "Y tế", icon: "medkit" },
+    { name: "Giáo dục", icon: "book" },
   ]);
+  
   const [incomeCategories, setIncomeCategories] = useState([
     { testId:"lương", name: "Lương", icon: "money" },
     { name: "Thưởng", icon: "gift" },
     { name: "Đầu tư", icon: "briefcase" },
+    { name: "Tiền lãi", icon: "bank" },
+    { name: "Khác", icon: "plus-circle" },
   ]);
 
   const transactionTypes = [
-    { testId: "income", name: "Thu nhập", value: "income" },
-    { testId: "expense", name: "Chi tiêu", value: "expense" },
+    { name: "Thu nhập", value: "income" },
+    { name: "Chi tiêu", value: "expense" },
   ];
 
   useEffect(() => {
@@ -58,8 +67,70 @@ export default function AddTransactionScreen() {
     fetchUserId();
   }, []);
 
+  // Cập nhật lại amount khi tính tổng từ items
+  useEffect(() => {
+    if (type === "expense" && items.length > 0) {
+      setAmount(calculateTotalAmount().toString());
+    }
+  }, [items, type]);
+
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!type) {
+      newErrors.type = "Vui lòng chọn loại giao dịch";
+    }
+    
+    if (!category) {
+      newErrors.category = "Vui lòng chọn danh mục";
+    }
+    
+    if (type === "income") {
+      if (!amount) {
+        newErrors.amount = "Vui lòng nhập số tiền";
+      } else if (isNaN(Number(amount)) || Number(amount) <= 0) {
+        newErrors.amount = "Số tiền phải là số dương";
+      }
+    }
+    
+    if (type === "expense" && items.length === 0) {
+      newErrors.items = "Vui lòng thêm ít nhất một mục chi tiêu";
+    }
+    
+    if (type === "expense" && items.length > 0) {
+      const itemErrors: string[] = [];
+      
+      items.forEach((item, index) => {
+        if (!item.productName.trim()) {
+          itemErrors.push(`Tên sản phẩm ${index + 1} không được để trống`);
+        }
+        
+        if (!item.quantity || isNaN(Number(item.quantity)) || Number(item.quantity) <= 0) {
+          itemErrors.push(`Số lượng của sản phẩm ${index + 1} phải là số dương`);
+        }
+        
+        if (!item.price || isNaN(Number(item.price)) || Number(item.price) <= 0) {
+          itemErrors.push(`Giá tiền của sản phẩm ${index + 1} phải là số dương`);
+        }
+      });
+      
+      if (itemErrors.length > 0) {
+        newErrors.itemDetails = itemErrors.join('\n');
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const addItem = () => {
     setItems([...items, { productName: "", quantity: "", price: "" }]);
+  };
+
+  const removeItem = (index: number) => {
+    const newItems = [...items];
+    newItems.splice(index, 1);
+    setItems(newItems);
   };
 
   const updateItem = (index: number, field: string, value: string) => {
@@ -76,12 +147,23 @@ export default function AddTransactionScreen() {
     }, 0);
   };
 
-  // Hàm thêm danh mục tùy chỉnh
+  const formatCurrency = (amount: number) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
   const addCustomCategory = () => {
     if (!customCategory.trim()) {
-      Alert.alert("Lỗi", "Vui lòng nhập tên danh mục!");
+      setErrors({...errors, customCategory: "Vui lòng nhập tên danh mục"});
       return;
     }
+    
+    // Kiểm tra xem danh mục đã tồn tại chưa
+    const categories = type === "income" ? incomeCategories : expenseCategories;
+    if (categories.some(c => c.name.toLowerCase() === customCategory.trim().toLowerCase())) {
+      setErrors({...errors, customCategory: "Danh mục này đã tồn tại"});
+      return;
+    }
+    
     if (type === "income") {
       setIncomeCategories([...incomeCategories, { name: customCategory, icon: "tag" }]);
       setCategory(customCategory);
@@ -89,47 +171,57 @@ export default function AddTransactionScreen() {
       setExpenseCategories([...expenseCategories, { name: customCategory, icon: "tag" }]);
       setCategory(customCategory);
     }
+    
     setCustomCategory("");
     setShowCustomCategoryInput(false);
+    setErrors({...errors, customCategory: "", category: ""});
   };
 
   const submitTransaction = async () => {
-    if ( !category || !type) {
+    if (!userId || !category || !type) {
       Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin giao dịch.");
       return;
     }
 
-    if (type === "expense" && items.length === 0) {
-      Alert.alert("Lỗi", "Vui lòng thêm ít nhất một mục chi tiêu.");
-      return;
-    }
-
-    const parsedAmount = type === "expense" ? calculateTotalAmount() : parseInt(amount);
-
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      Alert.alert("Lỗi", "Số tiền phải là số hợp lệ và lớn hơn 0.");
-      return;
-    }
-
+    setIsLoading(true);
+    
     try {
+      const parsedAmount = parseInt(amount);
+      
       const transactionData = {
         userId,
         type,
         category,
         amount: parsedAmount,
         items: type === "expense" ? items : undefined,
+        createdAt: new Date().toISOString(),
       };
 
       await axios.post(`${BACKEND_URL}/transactions`, transactionData);
       Alert.alert("Thành công", "Giao dịch đã được thêm thành công!");
+      
+      // Reset form
       setCategory("");
       setAmount("");
       setType("");
       setItems([]);
+      setErrors({});
     } catch (error) {
       console.error("Lỗi khi thêm giao dịch:", error);
       Alert.alert("Lỗi", "Đã có lỗi xảy ra khi gửi dữ liệu.");
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setType("");
+    setCategory("");
+    setAmount("");
+    setItems([]);
+    setCustomCategory("");
+    setShowCustomCategoryInput(false);
+    setErrors({});
   };
 
   return (
@@ -142,22 +234,24 @@ export default function AddTransactionScreen() {
         <Text style={styles.title} testID="title-text">Thêm giao dịch mới</Text>
   
         {/* Loại giao dịch */}
-        <Text style={styles.label} testID="transaction-type-label">Loại giao dịch</Text>
-        <View style={styles.box} testID="transaction-type-box">
+        <Text style={styles.label}>Loại giao dịch</Text>
+        <View style={styles.typeContainer}>
           {transactionTypes.map((typeOption, index) => (
             <TouchableOpacity
               key={index}
-              style={styles.listItem}
-              testID={`transaction-type-${typeOption.value}`}
+              style={[styles.typeButton, type === typeOption.value && styles.selectedType]}
               onPress={() => {
                 setType(typeOption.value);
                 setCategory("");
                 setItems([]);
                 setShowCustomCategoryInput(false);
+                setErrors({...errors, type: ""});
               }}
             >
-              <Text>{typeOption.name}</Text>
-              {type === typeOption.value && <Icon name="check" size={16} color="green" style={styles.iconRight} />}
+              <Icon name={typeOption.value === 'income' ? 'plus' : 'minus'} size={20} color={type === typeOption.value ? "#FFF" : "#28A745"} />
+              <Text style={[styles.typeText, type === typeOption.value && styles.selectedTypeText]}>
+                {typeOption.name}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -165,57 +259,60 @@ export default function AddTransactionScreen() {
         {/* Danh mục giao dịch */}
         {type && (
           <>
-            <Text style={styles.label} testID="category-label">Danh mục</Text>
-            <View style={styles.box} testID="category-box">
+            <Text style={styles.label}>Danh mục</Text>
+            <View style={styles.categoriesContainer}>
               {(type === "income" ? incomeCategories : expenseCategories).map((categoryOption, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={styles.listItem}
-                  testID={`category-${categoryOption.name}`}
+                  style={[styles.categoryButton, category === categoryOption.name && styles.selectedCategory]}
                   onPress={() => setCategory(categoryOption.name)}
                 >
-                  <Icon name={categoryOption.icon} size={20} color="#007AFF" style={styles.iconLeft} />
-                  <Text>{categoryOption.name}</Text>
-                  {category === categoryOption.name && (
-                    <Icon name="check" size={16} color="green" style={styles.iconRight} />
-                  )}
+                  <Icon 
+                    name={categoryOption.icon} 
+                    size={24} 
+                    color={category === categoryOption.name ? "#FFF" : "#28A745"} 
+                    style={styles.categoryIcon}
+                  />
+                  <Text style={[
+                    styles.categoryText,
+                    category === categoryOption.name && styles.selectedCategoryText
+                  ]}>
+                    {categoryOption.name}
+                  </Text>
                 </TouchableOpacity>
               ))}
               <TouchableOpacity
-                style={styles.listItem}
-                testID="add-custom-category"
+                style={styles.addCategoryButton}
                 onPress={() => setShowCustomCategoryInput(!showCustomCategoryInput)}
               >
-                <Icon name="plus" size={20} color="#007AFF" style={styles.iconLeft} />
-                <Text>Thêm danh mục mới</Text>
+                <Icon name="plus-circle" size={24} color="#28A745" />
+                <Text style={styles.addCategoryText}>Thêm mới</Text>
               </TouchableOpacity>
             </View>
   
             {/* Ô nhập danh mục tùy chỉnh */}
             {showCustomCategoryInput && (
-              <View style={styles.customCategoryContainer} testID="custom-category-input-container">
+              <View style={styles.customCategoryContainer}>
                 <TextInput
                   style={styles.input}
-                  testID="custom-category-input"
                   placeholder="Nhập danh mục mới"
                   value={customCategory}
                   onChangeText={setCustomCategory}
                 />
-                <Button type="primary" style={styles.addCategoryButton} testID="add-category-button" onPress={addCustomCategory}>
+                <Button type="primary" style={styles.addCategoryButton} onPress={addCustomCategory}>
                   Thêm
                 </Button>
               </View>
             )}
           </>
         )}
-  
+
         {/* Số tiền */}
         {type === "income" && (
           <>
-            <Text style={styles.label} testID="amount-label">Số tiền</Text>
+            <Text style={styles.label}>Số tiền</Text>
             <TextInput
               style={styles.input}
-              testID="amount-input"
               placeholder="Nhập số tiền"
               value={amount}
               onChangeText={setAmount}
@@ -225,46 +322,83 @@ export default function AddTransactionScreen() {
         )}
   
         {/* Mục chi tiêu */}
+        {/* Expense Items Section */}
         {type === "expense" && (
-          <>
-            <Text style={styles.subTitle} testID="expense-title">Chi tiết mục chi tiêu</Text>
+          <View style={styles.container}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.label}>Chi tiết mục chi tiêu</Text>
+              <TouchableOpacity
+                style={styles.addItemButton}
+                onPress={addItem}
+              >
+                <Icon name="plus" size={20} color="#FFFFFF" />
+                <Text style={styles.addItemButtonText}>Thêm mục</Text>
+              </TouchableOpacity>
+            </View>
+            
             {items.map((item, index) => (
-              <View key={index} style={styles.itemContainer} testID={`expense-item-${index}`}>
-                <TextInput
-                  style={styles.input}
-                  testID={`name-product-${index}`}
-                  placeholder="Tên sản phẩm"
-                  value={item.productName}
-                  onChangeText={(value) => updateItem(index, "productName", value)}
-                />
-                <TextInput
-                  style={styles.input}
-                  testID={`quantity-input-${index}`}
-                  placeholder="Số lượng"
-                  value={item.quantity}
-                  onChangeText={(value) => updateItem(index, "quantity", value)}
-                  keyboardType="numeric"
-                />
-                <TextInput
-                  style={styles.input}
-                  testID={`price-input-${index}`}
-                  placeholder="Giá tiền"
-                  value={item.price}
-                  onChangeText={(value) => updateItem(index, "price", value)}
-                  keyboardType="numeric"
-                />
+              <View key={index} style={styles.itemCard}>
+                <View style={styles.itemHeader}>
+                  <Text style={styles.itemTitle}>Mục {index + 1}</Text>
+                  <TouchableOpacity
+                    onPress={() => removeItem(index)}
+                    style={styles.removeButton}
+                  >
+                    <Icon name="trash" size={20} color="#DC3545" />
+                  </TouchableOpacity>
+                </View>
+                
+                <View style={styles.itemInputGroup}>
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Tên sản phẩm</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="VD: Cà phê"
+                      value={item.productName}
+                      onChangeText={(value) => updateItem(index, "productName", value)}
+                    />
+                  </View>
+                  
+                  <View style={styles.inputRow}>
+                    <View style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}>
+                      <Text style={styles.inputLabel}>Số lượng</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="VD: 2"
+                        value={item.quantity}
+                        onChangeText={(value) => updateItem(index, "quantity", value)}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={[styles.inputContainer, { flex: 1 }]}>
+                      <Text style={styles.inputLabel}>Đơn giá</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="VD: 25000"
+                        value={item.price}
+                        onChangeText={(value) => updateItem(index, "price", value)}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  </View>
+                  
+                  <Text style={styles.itemTotal}>
+                    Thành tiền: {formatCurrency(parseInt(item.quantity || "0") * parseInt(item.price || "0"))} VND
+                  </Text>
+                </View>
               </View>
             ))}
-  
-            <Text style={styles.totalAmount} testID="total-amount">Tổng tiền: {calculateTotalAmount()} VND</Text>
-  
-            <Button testID="add-item-button" type="ghost" style={styles.button} onPress={addItem}>
-              Thêm mục chi tiêu
-            </Button>
-          </>
+            
+            {items.length > 0 && (
+              <View style={styles.totalContainer}>
+                <Text style={styles.totalLabel}>Tổng cộng</Text>
+                <Text style={styles.totalAmount}>{formatCurrency(calculateTotalAmount())} VND</Text>
+              </View>
+            )}
+          </View>
         )}
-  
-        <Button type="primary" style={styles.submitButton} testID="submit-transaction" onPress={submitTransaction}>
+        
+        <Button type="primary" style={styles.submitButton} onPress={submitTransaction}>
           Gửi giao dịch
         </Button>
       </ScrollView>
@@ -273,6 +407,95 @@ export default function AddTransactionScreen() {
 }
 
 const styles = StyleSheet.create({
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  addItemButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#28A745",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 8,
+  },
+  addItemButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+  itemCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#E9ECEF",
+  },
+  itemHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#28A745",
+  },
+  removeButton: {
+    padding: 8,
+  },
+  itemInputGroup: {
+    gap: 12,
+  },
+  inputContainer: {
+    gap: 4,
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: "#6C757D",
+    fontWeight: "500",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#CED4DA",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: "#FFFFFF",
+  },
+  inputRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  itemTotal: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#28A745",
+    textAlign: "right",
+  },
+  totalContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F0FFF4",
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#218838",
+  },
+  totalAmount: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#28A745",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
@@ -290,44 +513,141 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    fontWeight: "600",
     color: "#218838",
     marginBottom: 8,
   },
-  box: {
-    padding: 12,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  errorText: {
+    color: "#DC3545",
+    fontSize: 14,
+    marginBottom: 8,
   },
-  listItem: {
+  typeContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  typeButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  iconLeft: {
-    marginRight: 12,
-  },
-  iconRight: {
-    marginLeft: "auto",
-  },
-  input: {
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "#F0FFF4",
     borderWidth: 1,
-    borderColor: "#DDD",
+    borderColor: "#28A745",
+    borderRadius: 8,
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  selectedType: {
+    backgroundColor: "#28A745",
+  },
+  typeText: {
+    color: "#28A745",
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+  selectedTypeText: {
+    color: "#FFF",
+  },
+  categoriesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 20,
+  },
+  categoryButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: '30%',
+    paddingVertical: 12,
+    backgroundColor: "#F0FFF4",
+    borderWidth: 1,
+    borderColor: "#28A745",
+    borderRadius: 8,
+    margin: 4,
+  },
+  selectedCategory: {
+    backgroundColor: "#28A745",
+  },
+  categoryIcon: {
+    marginBottom: 4,
+  },
+  categoryText: {
+    color: "#28A745",
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  selectedCategoryText: {
+    color: "#FFF",
+  },
+  addCategoryButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: '30%',
+    paddingVertical: 12,
+    backgroundColor: "#F0FFF4",
+    borderStyle: "dashed",
+    borderWidth: 1,
+    borderColor: "#28A745",
+    borderRadius: 8,
+    margin: 4,
+  },
+  addCategoryText: {
+    color: "#28A745",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  customCategoryContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  customCategoryInputContainer: {
+    flex: 1,
+  },
+  customCategoryInput: {
+    borderWidth: 1,
+    borderColor: "#28A745",
     padding: 12,
     backgroundColor: "#FFF",
     borderRadius: 8,
-    marginBottom: 10,
     fontSize: 16,
+  },
+  customCategoryButton: {
+    backgroundColor: "#28A745",
+    borderRadius: 8,
+    padding: 12,
+    marginLeft: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 48,
+    height: 48,
+  },
+  amountContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  amountInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#28A745",
+    padding: 12,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  currencyText: {
+    marginLeft: 8,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#218838",
   },
   subTitle: {
     fontSize: 18,
+    fontWeight: "600",
     color: "#28A745",
     marginBottom: 12,
   },
@@ -335,35 +655,67 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: "#fff",
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 1,
   },
-  totalAmount: {
-    fontSize: 16,
-    color: "#218838",
-    fontWeight: "bold",
-    marginBottom: 12,
+
+
+  inputGroup: {
+    marginBottom: 8,
   },
-  button: {
+
+  itemInput: {
+    borderWidth: 1,
+    borderColor: "#DDD",
+    padding: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    fontSize: 14,
+  },
+
+  addItemText: {
+    color: "#FFF",
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+
+  buttonGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 8,
-    borderColor: "#28A745",
+  },
+  resetButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#6C757D",
+    borderRadius: 8,
+    padding: 14,
+    alignItems: "center",
+    marginRight: 8,
+  },
+  resetButtonText: {
+    color: "#6C757D",
+    fontWeight: "600",
   },
   submitButton: {
-    marginTop: 20,
-    backgroundColor: "#28A745",
-  },
-  customCategoryContainer: {
+    flex: 2,
     flexDirection: "row",
+    backgroundColor: "#28A745",
+    borderRadius: 8,
+    padding: 14,
     alignItems: "center",
-    marginBottom: 16,
+    justifyContent: "center",
   },
-  addCategoryButton: {
-    marginLeft: 10,
-    paddingHorizontal: 15,
-    backgroundColor: "#007AFF",
+  submitButtonText: {
+    color: "#FFF",
+    fontWeight: "600",
+  },
+  disabledButton: {
+    backgroundColor: "#74C687",
+    opacity: 0.7,
   },
 });

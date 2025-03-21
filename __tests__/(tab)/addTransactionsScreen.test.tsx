@@ -1,10 +1,9 @@
 import React from "react";
-import { render, fireEvent, waitFor, act } from "@testing-library/react-native";
+import { render, fireEvent, act } from "@testing-library/react-native";
 import AddTransactionScreen from "../../app/(tabs)/settings";
 import axios from "axios";
 import * as ExpoRouter from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { press } from "@testing-library/react-native/build/user-event/press";
 import { Alert } from "react-native";
 
 // Mock axios

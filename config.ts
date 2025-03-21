@@ -1,1 +1,2 @@
-export const BACKEND_URL = 'https://bambon-be.onrender.com/api';
+// config.ts
+export const BACKEND_URL = 'http://192.168.2.12:3000/api';

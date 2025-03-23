@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/167</span>
+                <span class='fraction'>0/165</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/151</span>
+                <span class='fraction'>0/149</span>
             </div>
         
             
@@ -417,13 +417,7 @@
 <a name='L352'></a><a href='#L352'>352</a>
 <a name='L353'></a><a href='#L353'>353</a>
 <a name='L354'></a><a href='#L354'>354</a>
-<a name='L355'></a><a href='#L355'>355</a>
-<a name='L356'></a><a href='#L356'>356</a>
-<a name='L357'></a><a href='#L357'>357</a>
-<a name='L358'></a><a href='#L358'>358</a>
-<a name='L359'></a><a href='#L359'>359</a>
-<a name='L360'></a><a href='#L360'>360</a>
-<a name='L361'></a><a href='#L361'>361</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L355'></a><a href='#L355'>355</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -612,6 +606,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -619,6 +614,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -680,13 +676,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -768,14 +759,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -805,7 +793,7 @@ import { Header } from "../components/Header";
 import { ChartSection } from "../components/ChartSection";
 import { TransactionList } from "../components/TransactionList";
 import { TransactionModal } from "../components/TransactionModal";
-import BudgetScreen from "./BudgetScreen";
+import { SettingsModal } from "../components/SettingsModal";
 &nbsp;
 export default function <span class="fstat-no" title="function not covered" >HomeScreen(</span>{ navigation }: HomeScreenProps) {
   const [transactions, setTransactions] = <span class="cstat-no" title="statement not covered" >useState&lt;Transaction[]&gt;([]);</span>
@@ -825,7 +813,7 @@ export default function <span class="fstat-no" title="function not covered" >Hom
   const [editedTransaction, setEditedTransaction] = <span class="cstat-no" title="statement not covered" >useState&lt;Transaction | null&gt;(null);</span>
   const [budget, setBudget] = <span class="cstat-no" title="statement not covered" >useState&lt;number | null&gt;(null);</span>
   const [budgetWarningShown, setBudgetWarningShown] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
-  const [isBudgetModalVisible, setIsBudgetModalVisible] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(false);</span>
   const [filter, setFilter] = <span class="cstat-no" title="statement not covered" >useState&lt;FilterType&gt;("month");</span>
   const [dailyExpenses, setDailyExpenses] = <span class="cstat-no" title="statement not covered" >useState&lt;{ date: string; amount: number; type: 'income' | 'expense', category: string }[]&gt;([]);</span>
 &nbsp;
@@ -971,12 +959,14 @@ export default function <span class="fstat-no" title="function not covered" >Hom
 <span class="cstat-no" title="statement not covered" >    setIsExpanded(!isExpanded);</span>
   };
 &nbsp;
-  const toggleIncome = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+  const toggleIncome = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {  </span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    setShowIncome(!showIncome);</span>
   };
 &nbsp;
   const toggleExpense = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setShowExpense(!showExpense);</span>
+&nbsp;
   };
 &nbsp;
   const updateTransaction = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
@@ -1047,11 +1037,6 @@ export default function <span class="fstat-no" title="function not covered" >Hom
 <span class="cstat-no" title="statement not covered" >    setEditedTransaction({ ...editedTransaction, items: newItems });</span>
   };
 &nbsp;
-  const handleBudgetSaved = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setIsBudgetModalVisible(false);</span>
-<span class="cstat-no" title="statement not covered" >    fetchTransactionsAndBudget();</span>
-  };
-&nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;SafeAreaView style={styles.container}&gt;
       &lt;StatusBar barStyle="light-content" backgroundColor="#28a745" /&gt;
@@ -1078,7 +1063,7 @@ export default function <span class="fstat-no" title="function not covered" >Hom
             showExpense={showExpense}
             toggleIncome={toggleIncome}
             toggleExpense={toggleExpense}
-            onSettingsPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setIsBudgetModalVisible(true)}</span>
+            onSettingsPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setIsSettingsModalVisible(true)}</span>
           /&gt;
           &lt;ChartSection
             dailyExpenses={transactions.map(<span class="fstat-no" title="function not covered" >t </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span>
@@ -1125,20 +1110,17 @@ export default function <span class="fstat-no" title="function not covered" >Hom
             removeItem={removeItem}
             updateItem={updateItem}
           /&gt;
-          &lt;Modal
-            animationType="slide"
-            transparent={true}
-            visible={isBudgetModalVisible}
-            onRequestClose={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setIsBudgetModalVisible(false)}</span>
-          &gt;
-            &lt;View style={styles.modalContainer}&gt;
-              &lt;BudgetScreen 
-                onBudgetSaved={handleBudgetSaved} 
-                totalExpense={totalExpense}
-                transactions={transactions}
-              /&gt;
-            &lt;/View&gt;
-          &lt;/Modal&gt;
+          {/* Settings Modal */}
+          &lt;SettingsModal
+            visible={isSettingsModalVisible}
+            onClose={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setIsSettingsModalVisible(false)}</span>
+            totalExpense={totalExpense}
+            transactions={transactions}
+            onBudgetSaved={<span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >              fetchTransactionsAndBudget(1, true);</span>
+            }}
+            navigation={navigation}
+          /&gt;
         &lt;/ScrollView&gt;
       )}
     &lt;/SafeAreaView&gt;
@@ -1150,7 +1132,7 @@ export default function <span class="fstat-no" title="function not covered" >Hom
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-21T17:23:04.849Z
+                at 2025-03-23T17:32:19.473Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

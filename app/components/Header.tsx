@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
           <Text style={styles.welcomeText}>Chào mừng,</Text>
           <Text style={styles.userName}>User</Text>
         </View>
-        <TouchableOpacity onPress={onSettingsPress}>
+        <TouchableOpacity onPress={onSettingsPress} style={styles.settingsButton}>
           <Ionicons name="settings-outline" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -63,4 +63,4 @@ export const Header: React.FC<HeaderProps> = ({
       )}
     </View>
   );
-}; 
+};

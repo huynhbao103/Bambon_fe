@@ -85,6 +85,9 @@ export const styles = StyleSheet.create({
     fontSize: 14, 
     fontWeight: "500" 
   },
+  settingsButton: {
+    padding: 5,
+  },
   chartContainer: {
     marginTop: 25,
     backgroundColor: "#fff",
@@ -483,4 +486,4 @@ export const styles = StyleSheet.create({
     marginTop: 4,
     marginLeft: 2,
   },
-}); 
+});

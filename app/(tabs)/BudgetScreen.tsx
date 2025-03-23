@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "../../config";
@@ -171,23 +172,73 @@ export default function BudgetScreen({ onBudgetSaved, totalExpense, transactions
     checkBudgetOverflow();
   }, [spentAmounts, currentBudgets]);
 
+  // Hàm xóa ngân sách
+  const deleteBudget = (type: 'weekly' | 'monthly' | 'yearly') => {
+    Alert.alert(
+      "Xác nhận xóa",
+      `Bạn có chắc chắn muốn xóa ngân sách ${type === 'weekly' ? 'tuần' : type === 'monthly' ? 'tháng' : 'năm'} không?`,
+      [
+        { text: "Hủy", style: "cancel" },
+        { 
+          text: "Xóa", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Tạo bản sao của ngân sách hiện tại
+              const updatedBudgets = { ...currentBudgets };
+              
+              // Đặt giá trị ngân sách tương ứng thành null
+              updatedBudgets[`${type}Budget`] = null;
+              
+              // Cập nhật state
+              setCurrentBudgets(updatedBudgets);
+              
+              // Đặt lại giá trị input tương ứng
+              if (type === 'weekly') setWeeklyBudget("");
+              if (type === 'monthly') setMonthlyBudget("");
+              if (type === 'yearly') setYearlyBudget("");
+              
+              // Gửi yêu cầu cập nhật lên server
+              await axios.post(`${BACKEND_URL}/budget`, {
+                userId,
+                weeklyBudget: type === 'weekly' ? null : currentBudgets.weeklyBudget,
+                monthlyBudget: type === 'monthly' ? null : currentBudgets.monthlyBudget,
+                yearlyBudget: type === 'yearly' ? null : currentBudgets.yearlyBudget,
+              });
+              
+              Alert.alert("Thành công", "Đã xóa ngân sách!");
+              
+              if (onBudgetSaved) {
+                onBudgetSaved();
+              }
+            } catch (error) {
+              console.error("Lỗi khi xóa ngân sách:", error);
+              Alert.alert("Lỗi", "Không thể xóa ngân sách. Vui lòng thử lại!");
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const saveBudget = async () => {
-    // Kiểm tra xem có ít nhất 1 ngân sách được nhập không
-    if (!weeklyBudget && !monthlyBudget && !yearlyBudget) {
-      Alert.alert("Lỗi", "Vui lòng nhập ít nhất một loại ngân sách!");
+    // Chuyển đổi các giá trị sang số, nếu không nhập thì giữ nguyên giá trị cũ
+    // Nếu giá trị là 0 hoặc rỗng, đặt thành null (không có ngân sách)
+    const weekly = weeklyBudget ? (parseInt(weeklyBudget) || null) : currentBudgets.weeklyBudget;
+    const monthly = monthlyBudget ? (parseInt(monthlyBudget) || null) : currentBudgets.monthlyBudget;
+    const yearly = yearlyBudget ? (parseInt(yearlyBudget) || null) : currentBudgets.yearlyBudget;
+
+    // Kiểm tra xem có ít nhất 1 ngân sách hợp lệ không
+    if (weekly === null && monthly === null && yearly === null) {
+      Alert.alert("Lỗi", "Vui lòng nhập ít nhất một loại ngân sách hợp lệ!");
       return;
     }
 
-    // Chuyển đổi các giá trị sang số, nếu không nhập thì giữ nguyên giá trị cũ
-    const weekly = weeklyBudget ? parseInt(weeklyBudget) : (currentBudgets.weeklyBudget || 0);
-    const monthly = monthlyBudget ? parseInt(monthlyBudget) : (currentBudgets.monthlyBudget || 0);
-    const yearly = yearlyBudget ? parseInt(yearlyBudget) : (currentBudgets.yearlyBudget || 0);
-
     // Kiểm tra tính hợp lệ của các giá trị được nhập
     if (
-      (weeklyBudget && (isNaN(weekly) || weekly <= 0)) ||
-      (monthlyBudget && (isNaN(monthly) || monthly <= 0)) ||
-      (yearlyBudget && (isNaN(yearly) || yearly <= 0))
+      (weeklyBudget && weekly !== null && weekly <= 0) ||
+      (monthlyBudget && monthly !== null && monthly <= 0) ||
+      (yearlyBudget && yearly !== null && yearly <= 0)
     ) {
       Alert.alert("Lỗi", "Vui lòng nhập số tiền hợp lệ cho ngân sách!");
       return;
@@ -252,38 +303,68 @@ export default function BudgetScreen({ onBudgetSaved, totalExpense, transactions
       
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Ngân sách hiện tại</Text>
-        {currentBudgets.weeklyBudget !== null && (
-          <View style={styles.budgetItem}>
-            <Text style={styles.budgetText}>Tuần: {currentBudgets.weeklyBudget.toLocaleString('vi-VN')} đ</Text>
-            <Text style={[
-              styles.spentText,
-              spentAmounts.weeklySpent > currentBudgets.weeklyBudget && styles.overBudgetText
-            ]}>
-              Đã chi: {spentAmounts.weeklySpent.toLocaleString('vi-VN')} đ
-            </Text>
-          </View>
-        )}
-        {currentBudgets.monthlyBudget !== null && (
-          <View style={styles.budgetItem}>
-            <Text style={styles.budgetText}>Tháng: {currentBudgets.monthlyBudget.toLocaleString('vi-VN')} đ</Text>
-            <Text style={[
-              styles.spentText,
-              spentAmounts.monthlySpent > currentBudgets.monthlyBudget && styles.overBudgetText
-            ]}>
-              Đã chi: {spentAmounts.monthlySpent.toLocaleString('vi-VN')} đ
-            </Text>
-          </View>
-        )}
-        {currentBudgets.yearlyBudget !== null && (
-          <View style={styles.budgetItem}>
-            <Text style={styles.budgetText}>Năm: {currentBudgets.yearlyBudget.toLocaleString('vi-VN')} đ</Text>
-            <Text style={[
-              styles.spentText,
-              spentAmounts.yearlySpent > currentBudgets.yearlyBudget && styles.overBudgetText
-            ]}>
-              Đã chi: {spentAmounts.yearlySpent.toLocaleString('vi-VN')} đ
-            </Text>
-          </View>
+        {(currentBudgets.weeklyBudget === null && currentBudgets.monthlyBudget === null && currentBudgets.yearlyBudget === null) ? (
+          <Text style={styles.noBudgetText}>Chưa có ngân sách nào được thiết lập</Text>
+        ) : (
+          <>
+            {currentBudgets.weeklyBudget !== null && (
+              <View style={styles.budgetItem}>
+                <View style={styles.budgetHeader}>
+                  <Text style={styles.budgetText}>Tuần: {currentBudgets.weeklyBudget.toLocaleString('vi-VN')} đ</Text>
+                  <TouchableOpacity 
+                    style={styles.deleteButton} 
+                    onPress={() => deleteBudget('weekly')}
+                  >
+                    <Icon name="trash" size={16} color="#DC3545" />
+                  </TouchableOpacity>
+                </View>
+                <Text style={[
+                  styles.spentText,
+                  spentAmounts.weeklySpent > currentBudgets.weeklyBudget && styles.overBudgetText
+                ]}>
+                  Đã chi: {spentAmounts.weeklySpent.toLocaleString('vi-VN')} đ
+                </Text>
+              </View>
+            )}
+            {currentBudgets.monthlyBudget !== null && (
+              <View style={styles.budgetItem}>
+                <View style={styles.budgetHeader}>
+                  <Text style={styles.budgetText}>Tháng: {currentBudgets.monthlyBudget.toLocaleString('vi-VN')} đ</Text>
+                  <TouchableOpacity 
+                    style={styles.deleteButton} 
+                    onPress={() => deleteBudget('monthly')}
+                  >
+                    <Icon name="trash" size={16} color="#DC3545" />
+                  </TouchableOpacity>
+                </View>
+                <Text style={[
+                  styles.spentText,
+                  spentAmounts.monthlySpent > currentBudgets.monthlyBudget && styles.overBudgetText
+                ]}>
+                  Đã chi: {spentAmounts.monthlySpent.toLocaleString('vi-VN')} đ
+                </Text>
+              </View>
+            )}
+            {currentBudgets.yearlyBudget !== null && (
+              <View style={styles.budgetItem}>
+                <View style={styles.budgetHeader}>
+                  <Text style={styles.budgetText}>Năm: {currentBudgets.yearlyBudget.toLocaleString('vi-VN')} đ</Text>
+                  <TouchableOpacity 
+                    style={styles.deleteButton} 
+                    onPress={() => deleteBudget('yearly')}
+                  >
+                    <Icon name="trash" size={16} color="#DC3545" />
+                  </TouchableOpacity>
+                </View>
+                <Text style={[
+                  styles.spentText,
+                  spentAmounts.yearlySpent > currentBudgets.yearlyBudget && styles.overBudgetText
+                ]}>
+                  Đã chi: {spentAmounts.yearlySpent.toLocaleString('vi-VN')} đ
+                </Text>
+              </View>
+            )}
+          </>
         )}
       </View>
 
@@ -400,5 +481,20 @@ const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: "#28A745",
     marginTop: 8,
+  },
+  noBudgetText: {
+    fontSize: 16,
+    color: "#6C757D",
+    fontStyle: "italic",
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  budgetHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  deleteButton: {
+    padding: 5,
   },
 });

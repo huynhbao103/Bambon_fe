@@ -20,7 +20,7 @@ import { Header } from "../components/Header";
 import { ChartSection } from "../components/ChartSection";
 import { TransactionList } from "../components/TransactionList";
 import { TransactionModal } from "../components/TransactionModal";
-import BudgetScreen from "./BudgetScreen";
+import { SettingsModal } from "../components/SettingsModal";
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [editedTransaction, setEditedTransaction] = useState<Transaction | null>(null);
   const [budget, setBudget] = useState<number | null>(null);
   const [budgetWarningShown, setBudgetWarningShown] = useState<boolean>(false);
-  const [isBudgetModalVisible, setIsBudgetModalVisible] = useState<boolean>(false);
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
   const [filter, setFilter] = useState<FilterType>("month");
   const [dailyExpenses, setDailyExpenses] = useState<{ date: string; amount: number; type: 'income' | 'expense', category: string }[]>([]);
 
@@ -186,12 +186,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     setIsExpanded(!isExpanded);
   };
 
-  const toggleIncome = () => {
+  const toggleIncome = () => {  
+
     setShowIncome(!showIncome);
   };
 
   const toggleExpense = () => {
     setShowExpense(!showExpense);
+
   };
 
   const updateTransaction = async () => {
@@ -262,11 +264,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     setEditedTransaction({ ...editedTransaction, items: newItems });
   };
 
-  const handleBudgetSaved = () => {
-    setIsBudgetModalVisible(false);
-    fetchTransactionsAndBudget();
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#28a745" />
@@ -293,7 +290,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             showExpense={showExpense}
             toggleIncome={toggleIncome}
             toggleExpense={toggleExpense}
-            onSettingsPress={() => setIsBudgetModalVisible(true)}
+            onSettingsPress={() => setIsSettingsModalVisible(true)}
           />
           <ChartSection
             dailyExpenses={transactions.map(t => ({
@@ -340,20 +337,17 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             removeItem={removeItem}
             updateItem={updateItem}
           />
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isBudgetModalVisible}
-            onRequestClose={() => setIsBudgetModalVisible(false)}
-          >
-            <View style={styles.modalContainer}>
-              <BudgetScreen 
-                onBudgetSaved={handleBudgetSaved} 
-                totalExpense={totalExpense}
-                transactions={transactions}
-              />
-            </View>
-          </Modal>
+          {/* Settings Modal */}
+          <SettingsModal
+            visible={isSettingsModalVisible}
+            onClose={() => setIsSettingsModalVisible(false)}
+            totalExpense={totalExpense}
+            transactions={transactions}
+            onBudgetSaved={() => {
+              fetchTransactionsAndBudget(1, true);
+            }}
+            navigation={navigation}
+          />
         </ScrollView>
       )}
     </SafeAreaView>

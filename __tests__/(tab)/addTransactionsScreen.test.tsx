@@ -454,6 +454,7 @@ describe("AddTransactionScreen", () => {
         if (categoryButtons.length > 0) {
           fireEvent.press(categoryButtons[0]);
         }
+        
       });
   
       // Nhập số tiền hợp lệ

@@ -6,7 +6,28 @@ import { Link, useRouter } from 'expo-router';
 import { saveTokenAndUserId } from '../../schema/authen';
 import { BACKEND_URL } from '../../config';
 
-export const login = async (email: string, password: string, router: any, setError: (error: string) => void) => {
+export const login = async (
+  email: string,
+  password: string,
+  router: any,
+  setError: (error: string) => void,
+  testId?: string
+) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+  if (!email || !emailRegex.test(email)) {
+    const errorMsg = 'Vui lòng nhập email hợp lệ!';
+    console.error(`Lỗi đăng nhập${testId ? ` [${testId}]` : ''}:`, errorMsg);
+    setError(errorMsg);
+    return;
+  }
+
+  if (!password || password.length < 6) {
+    const errorMsg = 'Mật khẩu phải có ít nhất 6 ký tự!';
+    console.error(`Lỗi đăng nhập${testId ? ` [${testId}]` : ''}:`, errorMsg);
+    setError(errorMsg);
+    return;
+  }
+
   try {
     console.log('Đang gửi yêu cầu đăng nhập...');
 
@@ -19,15 +40,14 @@ export const login = async (email: string, password: string, router: any, setErr
 
     const token: string = response.data.token;
 
-    // 🟢 Lưu token vào AsyncStorage
     await AsyncStorage.setItem('token', token);
     saveTokenAndUserId(token);
     console.log('Token đã lưu:', token);
 
-    // 🔄 Chuyển hướng đến Home
     router.push('/(tabs)/home');
   } catch (err: any) {
-    console.error('Lỗi đăng nhập:', err.response ? err.response.data : err.message);
+    const errorMessage = err.response ? err.response.data : err.message;
+    console.error(`Lỗi đăng nhập${testId ? ` [${testId}]` : ''}:`, errorMessage);
     setError(err.response?.data?.message || 'Sai email hoặc mật khẩu!');
   }
 };

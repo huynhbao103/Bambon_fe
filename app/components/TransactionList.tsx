@@ -51,7 +51,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
     }
   };
 
-  const filteredTransactions = transactions.filter(t => isDateInRange(t.date));
+  const filteredTransactions = transactions
+    .filter(t => isDateInRange(t.date))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const formatAmount = (amount: number) => {
     if (amount >= 1000000000) {
@@ -112,4 +114,4 @@ export const TransactionList: React.FC<TransactionListProps> = ({
       ))}
     </ScrollView>
   );
-}; 
+};

@@ -1,8 +1,59 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, TextInput, Button, Text, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { Link } from 'expo-router';
-import { BACKEND_URL } from '../../config'; 
+import { BACKEND_URL } from '../../config';
+
+export const register = async (
+  name: string,
+  email: string,
+  password: string,
+  setError: (error: string) => void,
+  setSuccessMessage: (message: string) => void,
+  testId?: string
+) => {
+  if (!name || name.trim().length < 1) {
+    const errorMsg = 'Vui lòng nhập tên hợp lệ!';
+    console.error(`Lỗi đăng ký${testId ? ` [${testId}]` : ''}:`, errorMsg);
+    setError(errorMsg);
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    const errorMsg = 'Vui lòng nhập email hợp lệ!';
+    console.error(`Lỗi đăng ký${testId ? ` [${testId}]` : ''}:`, errorMsg);
+    setError(errorMsg);
+    return;
+  }
+
+  if (!password || password.length < 6) {
+    const errorMsg = 'Mật khẩu phải có ít nhất 6 ký tự!';
+    console.error(`Lỗi đăng ký${testId ? ` [${testId}]` : ''}:`, errorMsg);
+    setError(errorMsg);
+    return;
+  }
+
+  try {
+    const response = await axios.post<{ message: string }>(`${BACKEND_URL}/auth/register`, {
+      name,
+      email,
+      password,
+    });
+    console.log('Response Status:', response.status);
+    if (response.status === 200 && response.data.message === 'User registered') {
+      setSuccessMessage('Registration successful!');
+    } else {
+      const errorMsg = 'Registration failed';
+      console.error(`Lỗi đăng ký${testId ? ` [${testId}]` : ''}:`, errorMsg);
+      setError(errorMsg);
+    }
+  } catch (err) {
+    const errorMsg = 'Registration failed';
+    console.error(`Lỗi đăng ký${testId ? ` [${testId}]` : ''}:`, err);
+    setError(errorMsg);
+  }
+};
 
 const RegisterScreen: React.FC = () => {
   const [name, setName] = useState<string>('');
@@ -10,25 +61,6 @@ const RegisterScreen: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
-
-  const register = async () => {
-    try {
-      const response = await axios.post<{ message: string }>(`${BACKEND_URL}/auth/register`, {
-        name,
-        email,
-        password,
-      });
-      console.log('Response Status:', response.status);
-      if (response.status === 200 && response.data.message === 'User registered') {
-        setSuccessMessage('Registration successful!');
-      } else {
-        setError('Registration failed');
-      }
-    } catch (err) {
-      console.error('Error:', err);
-      setError('Registration failed');
-    }
-  };
 
   return (
     <ScrollView style={styles.container}>
@@ -54,8 +86,12 @@ const RegisterScreen: React.FC = () => {
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
       {successMessage && <Text style={styles.successText}>{successMessage}</Text>}
-      <Button title="Register" onPress={register} color="#32CD32" />
-      <Link href='/pages/login' style={styles.loginLink}>
+      <Button
+        title="Register"
+        onPress={() => register(name, email, password, setError, setSuccessMessage)}
+        color="#32CD32"
+      />
+      <Link href="/pages/login" style={styles.loginLink}>
         <Text style={styles.loginText}>Already have an account? Login</Text>
       </Link>
     </ScrollView>

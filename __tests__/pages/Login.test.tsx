@@ -23,6 +23,14 @@ const mockRouter = { push: jest.fn() };
 const mockSetError = jest.fn();
 
 describe('Login Function', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -33,7 +41,7 @@ describe('Login Function', () => {
         data: { token: 'mockToken123' },
       });
 
-      await login('test@example.com', 'correctpassword', mockRouter, mockSetError);
+      await login('test@example.com', 'correctpassword', mockRouter, mockSetError, 'UTCID01');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.any(String),
@@ -52,11 +60,15 @@ describe('Login Function', () => {
         response: { data: { message: 'Sai email hoặc mật khẩu!' } },
       });
 
-      await login('test@example.com', 'incorrectpassword', mockRouter, mockSetError);
+      await login('test@example.com', 'incorrectpassword', mockRouter, mockSetError, 'UTCID02');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.any(String),
         { email: 'test@example.com', password: 'incorrectpassword' }
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Lỗi đăng nhập [UTCID02]:',
+        { message: 'Sai email hoặc mật khẩu!' }
       );
       expect(mockSetError).toHaveBeenCalledWith('Sai email hoặc mật khẩu!');
       expect(mockRouter.push).not.toHaveBeenCalled();
@@ -69,11 +81,15 @@ describe('Login Function', () => {
         response: { data: { message: 'Sai email hoặc mật khẩu!' } },
       });
 
-      await login('test@examplee.com', 'correctpassword', mockRouter, mockSetError);
+      await login('test@examplee.com', 'correctpassword', mockRouter, mockSetError, 'UTCID03');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.any(String),
         { email: 'test@examplee.com', password: 'correctpassword' }
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Lỗi đăng nhập [UTCID03]:',
+        { message: 'Sai email hoặc mật khẩu!' }
       );
       expect(mockSetError).toHaveBeenCalledWith('Sai email hoặc mật khẩu!');
       expect(mockRouter.push).not.toHaveBeenCalled();
@@ -82,17 +98,14 @@ describe('Login Function', () => {
 
   describe('UTCID04 -> Đăng nhập với email và mật khẩu rỗng', () => {
     it('Hiển thị lỗi khi không nhập email và mật khẩu', async () => {
-      mockedAxios.post.mockRejectedValueOnce({
-        response: { data: { message: 'Sai email hoặc mật khẩu!' } },
-      });
+      await login('', '', mockRouter, mockSetError, 'UTCID04');
 
-      await login('', '', mockRouter, mockSetError);
-
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        expect.any(String),
-        { email: '', password: '' }
+      expect(mockedAxios.post).not.toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(
+        'Lỗi đăng nhập [UTCID04]:',
+        'Vui lòng nhập email hợp lệ!'
       );
-      expect(mockSetError).toHaveBeenCalledWith('Sai email hoặc mật khẩu!');
+      expect(mockSetError).toHaveBeenCalledWith('Vui lòng nhập email hợp lệ!');
       expect(mockRouter.push).not.toHaveBeenCalled();
     });
   });
@@ -106,7 +119,7 @@ describe('Login Function', () => {
       const longEmail = 'very.long.email.address.for.testing@example.com';
       const longPassword = 'thisisaverylongpassword123';
 
-      await login(longEmail, longPassword, mockRouter, mockSetError);
+      await login(longEmail, longPassword, mockRouter, mockSetError, 'UTCID05');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.any(String),
@@ -123,45 +136,50 @@ describe('Login Function', () => {
     it('Hiển thị lỗi mặc định khi API không phản hồi', async () => {
       mockedAxios.post.mockRejectedValueOnce(new Error('Network Error'));
 
-      await login('test@example.com', 'correctpassword', mockRouter, mockSetError);
+      await login('test@example.com', 'correctpassword', mockRouter, mockSetError, 'UTCID06');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.any(String),
         { email: 'test@example.com', password: 'correctpassword' }
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Lỗi đăng nhập [UTCID06]:',
+        'Network Error'
       );
       expect(mockSetError).toHaveBeenCalledWith('Sai email hoặc mật khẩu!');
       expect(mockRouter.push).not.toHaveBeenCalled();
     });
   });
 
-  describe('UTCID07 -> Đăng nhập với email không hợp lệ', () => {
-    it('Hiển thị lỗi khi email thiếu ký tự @', async () => {
-      mockedAxios.post.mockRejectedValueOnce({
-        response: { data: { message: 'Sai email hoặc mật khẩu!' } },
-      });
+  describe('UTCID07 -> Đăng nhập với email không hợp lệ (thiếu @)', () => {
+    it('Hiển thị lỗi khi email không đúng định dạng', async () => {
+      await login('testexample.com', 'correctpassword', mockRouter, mockSetError, 'UTCID07');
 
-      await login('testexample.com', 'correctpassword', mockRouter, mockSetError);
-
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        expect.any(String),
-        { email: 'testexample.com', password: 'correctpassword' }
+      expect(mockedAxios.post).not.toHaveBeenCalled(); // API không được gọi
+      expect(console.error).toHaveBeenCalledWith(
+        'Lỗi đăng nhập [UTCID07]:',
+        'Vui lòng nhập email hợp lệ!'
       );
-      expect(mockSetError).toHaveBeenCalledWith('Sai email hoặc mật khẩu!');
+      expect(mockSetError).toHaveBeenCalledWith('Vui lòng nhập email hợp lệ!');
       expect(mockRouter.push).not.toHaveBeenCalled();
     });
   });
 
   describe('UTCID08 -> Đăng nhập thất bại do lỗi server (500)', () => {
-    it('Hiển thị lỗi mặc định khi server trả về mã lỗi 500', async () => {
+    it('Hiển thị lỗi khi server trả về mã lỗi 500', async () => {
       mockedAxios.post.mockRejectedValueOnce({
         response: { status: 500, data: { message: 'Internal Server Error' } },
       });
 
-      await login('test@example.com', 'correctpassword', mockRouter, mockSetError);
+      await login('test@example.com', 'correctpassword', mockRouter, mockSetError, 'UTCID08');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.any(String),
         { email: 'test@example.com', password: 'correctpassword' }
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Lỗi đăng nhập [UTCID08]:',
+        { message: 'Internal Server Error' }
       );
       expect(mockSetError).toHaveBeenCalledWith('Internal Server Error');
       expect(mockRouter.push).not.toHaveBeenCalled();
@@ -178,7 +196,7 @@ describe('Login Function', () => {
       const maxEmail = `${maxLengthString}@example.com`;
       const maxPassword = maxLengthString;
 
-      await login(maxEmail, maxPassword, mockRouter, mockSetError);
+      await login(maxEmail, maxPassword, mockRouter, mockSetError, 'UTCID09');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.any(String),
@@ -191,19 +209,16 @@ describe('Login Function', () => {
     });
   });
 
-  describe('UTCID10 -> Đăng nhập với email và mật khẩu tối thiểu', () => {
-    it('Đăng nhập với email và mật khẩu chỉ 1 ký tự', async () => {
-      mockedAxios.post.mockRejectedValueOnce({
-        response: { data: { message: 'Sai email hoặc mật khẩu!' } },
-      });
+  describe('UTCID10 -> Đăng nhập với mật khẩu ngắn', () => {
+    it('Hiển thị lỗi khi mật khẩu dưới 6 ký tự', async () => {
+      await login('test@example.com', 'short', mockRouter, mockSetError, 'UTCID10');
 
-      await login('a@a', 'b', mockRouter, mockSetError);
-
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        expect.any(String),
-        { email: 'a@a', password: 'b' }
+      expect(mockedAxios.post).not.toHaveBeenCalled(); // API không được gọi
+      expect(console.error).toHaveBeenCalledWith(
+        'Lỗi đăng nhập [UTCID10]:',
+        'Mật khẩu phải có ít nhất 6 ký tự!'
       );
-      expect(mockSetError).toHaveBeenCalledWith('Sai email hoặc mật khẩu!');
+      expect(mockSetError).toHaveBeenCalledWith('Mật khẩu phải có ít nhất 6 ký tự!');
       expect(mockRouter.push).not.toHaveBeenCalled();
     });
   });

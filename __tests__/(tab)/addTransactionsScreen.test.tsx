@@ -555,7 +555,6 @@ mockedAxios.post.mockClear();
       expect(Alert.alert).toHaveBeenCalledWith("Thành công", "Giao dịch đã được thêm thành công!");
     });
   });
-  
 
   // UTCID15: Thêm nhiều mục chi tiêu và gửi giao dịch thành công
   describe("UTCID15", () => {

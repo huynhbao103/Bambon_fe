@@ -4,39 +4,39 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Link, useRouter } from 'expo-router';
 import { saveTokenAndUserId } from '../../schema/authen';
-import { BACKEND_URL } from '../../config'; 
+import { BACKEND_URL } from '../../config';
 
- const LoginScreen: React.FC = () => {
+export const login = async (email: string, password: string, router: any, setError: (error: string) => void) => {
+  try {
+    console.log('Đang gửi yêu cầu đăng nhập...');
+
+    const response = await axios.post<{ token: string }>(`${BACKEND_URL}/auth/login`, {
+      email,
+      password,
+    });
+
+    console.log('Phản hồi từ server:', response.data);
+
+    const token: string = response.data.token;
+
+    // 🟢 Lưu token vào AsyncStorage
+    await AsyncStorage.setItem('token', token);
+    saveTokenAndUserId(token);
+    console.log('Token đã lưu:', token);
+
+    // 🔄 Chuyển hướng đến Home
+    router.push('/(tabs)/home');
+  } catch (err: any) {
+    console.error('Lỗi đăng nhập:', err.response ? err.response.data : err.message);
+    setError(err.response?.data?.message || 'Sai email hoặc mật khẩu!');
+  }
+};
+
+const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const router = useRouter();
-
-  const login = async () => {
-    try {
-      console.log('Đang gửi yêu cầu đăng nhập...');
-
-      const response = await axios.post<{ token: string }>(`${BACKEND_URL}/auth/login`, {
-        email,
-        password,
-      });
-
-      console.log('Phản hồi từ server:', response.data);
-
-      const token: string = response.data.token;
-
-      // 🟢 Lưu token vào AsyncStorage
-      await AsyncStorage.setItem('token', token);
-      saveTokenAndUserId(token); 
-      console.log('Token đã lưu:', token);
-
-      // 🔄 Chuyển hướng đến Home
-      router.push('/(tabs)/home');
-    } catch (err: any) {
-      console.error('Lỗi đăng nhập:', err.response ? err.response.data : err.message);
-      setError(err.response?.data?.message || 'Sai email hoặc mật khẩu!');
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -55,7 +55,7 @@ import { BACKEND_URL } from '../../config';
         style={styles.input}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
-      <Button title="Login" onPress={login} color="#32CD32" />
+      <Button title="Login" onPress={() => login(email, password, router, setError)} color="#32CD32" />
       <Link href="/pages/register" asChild>
         <Pressable style={styles.registerLink}>
           <Text>Go to Register</Text>
@@ -102,6 +102,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 
 export default LoginScreen;

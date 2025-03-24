@@ -79,48 +79,95 @@ export default function AddTransactionScreen() {
     
     if (!type) {
       newErrors.type = "Vui lòng chọn loại giao dịch";
+      return false;
     }
     
     if (!category) {
       newErrors.category = "Vui lòng chọn danh mục";
+      return false;
     }
     
     if (type === "income") {
-      if (!amount) {
+      if (!amount || amount.trim() === "") {
         newErrors.amount = "Vui lòng nhập số tiền";
-      } else if (isNaN(Number(amount)) || Number(amount) <= 0) {
-        newErrors.amount = "Số tiền phải là số dương";
+        setErrors(newErrors);
+        return false;
+      }
+      
+      const parsedAmount = Number(amount);
+      if (isNaN(parsedAmount)) {
+        newErrors.amount = "Số tiền không hợp lệ, vui lòng chỉ nhập số";
+        setErrors(newErrors);
+        return false;
+      }
+      
+      if (parsedAmount <= 0) {
+        newErrors.amount = "Số tiền phải lớn hơn 0";
+        setErrors(newErrors);
+        return false;
       }
     }
     
-    if (type === "expense" && items.length === 0) {
-      newErrors.items = "Vui lòng thêm ít nhất một mục chi tiêu";
-    }
-    
-    if (type === "expense" && items.length > 0) {
+    if (type === "expense") {
+      if (items.length === 0) {
+        newErrors.items = "Vui lòng thêm ít nhất một mục chi tiêu";
+        setErrors(newErrors);
+        return false;
+      }
+      
       const itemErrors: string[] = [];
       
-      items.forEach((item, index) => {
-        if (!item.productName.trim()) {
-          itemErrors.push(`Tên sản phẩm ${index + 1} không được để trống`);
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const itemIndex = i + 1;
+        
+        if (!item.productName || item.productName.trim() === "") {
+          itemErrors.push(`Tên sản phẩm ${itemIndex} không được để trống`);
+          continue;
         }
         
-        if (!item.quantity || isNaN(Number(item.quantity)) || Number(item.quantity) <= 0) {
-          itemErrors.push(`Số lượng của sản phẩm ${index + 1} phải là số dương`);
+        if (!item.quantity || item.quantity.trim() === "") {
+          itemErrors.push(`Vui lòng nhập số lượng cho sản phẩm ${itemIndex}`);
+          continue;
         }
         
-        if (!item.price || isNaN(Number(item.price)) || Number(item.price) <= 0) {
-          itemErrors.push(`Giá tiền của sản phẩm ${index + 1} phải là số dương`);
+        const quantity = Number(item.quantity);
+        if (isNaN(quantity)) {
+          itemErrors.push(`Số lượng của sản phẩm ${itemIndex} phải là số`);
+          continue;
         }
-      });
+        
+        if (quantity <= 0 || !Number.isInteger(quantity)) {
+          itemErrors.push(`Số lượng của sản phẩm ${itemIndex} phải là số nguyên dương`);
+          continue;
+        }
+        
+        if (!item.price || item.price.trim() === "") {
+          itemErrors.push(`Vui lòng nhập đơn giá cho sản phẩm ${itemIndex}`);
+          continue;
+        }
+        
+        const price = Number(item.price);
+        if (isNaN(price)) {
+          itemErrors.push(`Đơn giá của sản phẩm ${itemIndex} phải là số`);
+          continue;
+        }
+        
+        if (price <= 0) {
+          itemErrors.push(`Đơn giá của sản phẩm ${itemIndex} phải lớn hơn 0`);
+          continue;
+        }
+      }
       
       if (itemErrors.length > 0) {
         newErrors.itemDetails = itemErrors.join('\n');
+        setErrors(newErrors);
+        return false;
       }
     }
     
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors({});
+    return true;
   };
 
   const addItem = () => {
@@ -178,15 +225,92 @@ export default function AddTransactionScreen() {
   };
 
   const submitTransaction = async () => {
-    if (!userId || !category || !type) {
-      Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin giao dịch.");
+    if (!userId) {
+      Alert.alert("Lỗi", "Vui lòng đăng nhập để thực hiện giao dịch.");
       return;
+    }
+
+    if (!type) {
+      Alert.alert("Lỗi", "Vui lòng chọn loại giao dịch.");
+      return;
+    }
+
+    if (!category) {
+      Alert.alert("Lỗi", "Vui lòng chọn danh mục.");
+      return;
+    }
+
+    if (type === "income") {
+      if (!amount || amount.trim() === "") {
+        Alert.alert("Lỗi", "Vui lòng nhập số tiền.");
+        return;
+      }
+
+      const parsedAmount = Number(amount);
+      if (isNaN(parsedAmount)) {
+        Alert.alert("Lỗi", "Số tiền không hợp lệ, vui lòng chỉ nhập số.");
+        return;
+      }
+
+      if (parsedAmount <= 0) {
+        Alert.alert("Lỗi", "Số tiền phải lớn hơn 0.");
+        return;
+      }
+    }
+
+    if (type === "expense") {
+      if (items.length === 0) {
+        Alert.alert("Lỗi", "Vui lòng thêm ít nhất một mục chi tiêu.");
+        return;
+      }
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const itemIndex = i + 1;
+
+        if (!item.productName || item.productName.trim() === "") {
+          Alert.alert("Lỗi", `Vui lòng nhập tên cho sản phẩm ${itemIndex}.`);
+          return;
+        }
+
+        if (!item.quantity || item.quantity.trim() === "") {
+          Alert.alert("Lỗi", `Vui lòng nhập số lượng cho sản phẩm ${itemIndex}.`);
+          return;
+        }
+
+        const quantity = Number(item.quantity);
+        if (isNaN(quantity)) {
+          Alert.alert("Lỗi", `Số lượng của sản phẩm ${itemIndex} phải là số.`);
+          return;
+        }
+
+        if (quantity <= 0 || !Number.isInteger(quantity)) {
+          Alert.alert("Lỗi", `Số lượng của sản phẩm ${itemIndex} phải là số nguyên dương.`);
+          return;
+        }
+
+        if (!item.price || item.price.trim() === "") {
+          Alert.alert("Lỗi", `Vui lòng nhập đơn giá cho sản phẩm ${itemIndex}.`);
+          return;
+        }
+
+        const price = Number(item.price);
+        if (isNaN(price)) {
+          Alert.alert("Lỗi", `Đơn giá của sản phẩm ${itemIndex} phải là số.`);
+          return;
+        }
+
+        if (price <= 0) {
+          Alert.alert("Lỗi", `Đơn giá của sản phẩm ${itemIndex} phải lớn hơn 0.`);
+          return;
+        }
+      }
     }
 
     setIsLoading(true);
     
     try {
-      const parsedAmount = parseInt(amount);
+      const parsedAmount = type === "income" ? Number(amount) : calculateTotalAmount();
       
       const transactionData = {
         userId,

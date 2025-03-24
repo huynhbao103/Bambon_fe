@@ -268,9 +268,15 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#28a745" />
       {loading ? (
-        <ActivityIndicator size="large" color="#28a745" style={styles.loader} />
+        <ActivityIndicator 
+          testID="loader"
+          size="large" 
+          color="#28a745" 
+          style={styles.loader} 
+        />
       ) : (
         <ScrollView 
+          testID="scroll-view"
           style={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
           refreshControl={

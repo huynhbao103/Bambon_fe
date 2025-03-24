@@ -9,7 +9,15 @@ NativeModules.SettingsManager = {
 };
 jest.mock("expo-font", () => ({
   loadAsync: jest.fn(),
+  Font: {
+    isLoaded: jest.fn().mockReturnValue(true)
+  }
 }));
+
+jest.mock("@expo/vector-icons", () => ({
+  Ionicons: "Icon"
+}));
+
 jest.mock("react-native-vector-icons/FontAwesome", () => "Icon");
 
 // Mock Appearance với kiểm tra an toàn

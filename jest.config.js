@@ -1,15 +1,15 @@
 module.exports = {
-    collectCoverage: true,
-    collectCoverageFrom: [
-      "**/*.{ts,tsx,js,jsx}",
-      "!**/coverage/**",
-      "!**/node_modules/**",
-      "!**/babel.config.js",
-      "!**/expo-env.d.ts",
-      "!**/.expo/**"
-    ],
-    preset: 'jest-expo',
-    transformIgnorePatterns: [
+  collectCoverage: true,
+  collectCoverageFrom: [
+    "**/*.{ts,tsx,js,jsx}",
+    "!**/coverage/**",
+    "!**/node_modules/**",
+    "!**/babel.config.js",
+    "!**/expo-env.d.ts",
+    "!**/.expo/**"
+  ],
+  preset: 'jest-expo',
+  transformIgnorePatterns: [
     "node_modules/(?!(jest-)?react-native" +
     "|@react-native" +
     "|@react-navigation" +
@@ -25,5 +25,6 @@ module.exports = {
     "|@bang88/react-native-ultimate-listview" +
     ")"
   ],
-    setupFiles: ['./jest.setup.tsx'],  
- }; 
+  setupFiles: ['./jest.setup.tsx'],
+  setupFilesAfterEnv: ["@testing-library/jest-native/extend-expect"]
+};

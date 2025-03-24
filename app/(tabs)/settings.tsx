@@ -285,6 +285,7 @@ export default function AddTransactionScreen() {
               <TouchableOpacity
                 style={styles.addCategoryButton}
                 onPress={() => setShowCustomCategoryInput(!showCustomCategoryInput)}
+                testID="add-custom-category-button"
               >
                 <Icon name="plus-circle" size={24} color="#28A745" />
                 <Text style={styles.addCategoryText}>Thêm mới</Text>
@@ -300,7 +301,7 @@ export default function AddTransactionScreen() {
                   value={customCategory}
                   onChangeText={setCustomCategory}
                 />
-                <Button type="primary" style={styles.addCategoryButton} onPress={addCustomCategory}>
+                <Button type="primary" style={styles.addCategoryButton} onPress={addCustomCategory} testID="confirm-add-category-button">
                   Thêm
                 </Button>
               </View>
@@ -331,6 +332,7 @@ export default function AddTransactionScreen() {
               <TouchableOpacity
                 style={styles.addItemButton}
                 onPress={addItem}
+                testID="add-item-button"
               >
                 <Icon name="plus" size={20} color="#FFFFFF" />
                 <Text style={styles.addItemButtonText}>Thêm mục</Text>
@@ -344,6 +346,7 @@ export default function AddTransactionScreen() {
                   <TouchableOpacity
                     onPress={() => removeItem(index)}
                     style={styles.removeButton}
+                    testID="remove-item-button"
                   >
                     <Icon name="trash" size={20} color="#DC3545" />
                   </TouchableOpacity>
@@ -399,7 +402,7 @@ export default function AddTransactionScreen() {
           </View>
         )}
         
-        <Button type="primary" style={styles.submitButton} onPress={submitTransaction}>
+        <Button type="primary" style={styles.submitButton} onPress={submitTransaction} testID="submit-transaction-button">
           Gửi giao dịch
         </Button>
       </ScrollView>

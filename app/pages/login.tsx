@@ -21,7 +21,7 @@ export const login = async (
     return;
   }
 
-  if (!password || password.length < 6) {
+  if (!password || password.length < 6 || password.length >50) {
     const errorMsg = 'Mật khẩu phải có ít nhất 6 ký tự!';
     console.error(`Lỗi đăng nhập${testId ? ` [${testId}]` : ''}:`, errorMsg);
     setError(errorMsg);

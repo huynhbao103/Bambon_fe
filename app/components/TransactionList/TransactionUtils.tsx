@@ -1,4 +1,4 @@
-import { FilterType } from '../types';
+import { FilterType } from '../../types';
 
 export const isDateInRange = (transactionDate: string, filter: FilterType): boolean => {
   const now = new Date();

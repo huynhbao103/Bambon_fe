@@ -1,322 +1,320 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../styles';
-import { Transaction, TransactionItem } from '../types';
+import BudgetScreen from '../(tabs)/BudgetScreen';
+import { useRouter } from 'expo-router';
 
-interface TransactionModalProps {
-  selectedTransaction: Transaction | null;
-  isEditing: boolean;
-  editedTransaction: Transaction | null;
+interface SettingsModalProps {
+  visible: boolean;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: (id: string) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  setEditedTransaction: (transaction: Transaction) => void;
-  addItem: () => void;
-  removeItem: (index: number) => void;
-  updateItem: (index: number, field: string, value: string | number) => void;
+  totalExpense: number;
+  transactions: any[];
+  onBudgetSaved: () => void;
+  navigation: any;
 }
 
-export const TransactionModal: React.FC<TransactionModalProps> = ({
-  selectedTransaction,
-  isEditing,
-  editedTransaction,
+export const SettingsModal: React.FC<SettingsModalProps> = ({
+  visible,
   onClose,
-  onEdit,
-  onDelete,
-  onSave,
-  onCancel,
-  setEditedTransaction,
-  addItem,
-  removeItem,
-  updateItem,
+  totalExpense,
+  transactions,
+  onBudgetSaved,
+  navigation
 }) => {
-  if (!selectedTransaction || !editedTransaction) return null;
-  
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [currentScreen, setCurrentScreen] = useState<'main' | 'budget' | 'account'>('main');
+  const router = useRouter();
 
-  const validateInput = (field: string, value: string | number): boolean => {
-    let isValid = true;
-    const newErrors = {...errors};
-    
-    if (field === 'productName') {
-      if (typeof value === 'string' && value.length > 50) {
-        newErrors[field] = 'Tên sản phẩm không được quá 50 ký tự';
-        isValid = false;
-      } else {
-        delete newErrors[field];
-      }
-    }
-    
-    if (field === 'price' || field === 'amount') {
-      const numValue = typeof value === 'string' ? parseFloat(value) : value;
-      if (isNaN(numValue)) {
-        newErrors[field] = 'Vui lòng nhập số hợp lệ';
-        isValid = false;
-      } else if (numValue < 0) {
-        newErrors[field] = 'Giá trị không được âm';
-        isValid = false;
-      } else if (numValue > 1000000000) {
-        newErrors[field] = 'Giá trị không được quá 1 tỷ đồng';
-        isValid = false;
-      } else {
-        delete newErrors[field];
-      }
-    }
-    
-    if (field === 'quantity') {
-      const numValue = typeof value === 'string' ? parseFloat(value) : value;
-      if (isNaN(numValue)) {
-        newErrors[field] = 'Vui lòng nhập số hợp lệ';
-        isValid = false;
-      } else if (numValue < 0) {
-        newErrors[field] = 'Số lượng không được âm';
-        isValid = false;
-      } else {
-        delete newErrors[field];
-      }
-    }
-    
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const calculateTotal = () => {
-    let total = 0;
-    if (editedTransaction.items && editedTransaction.items.length > 0) {
-      total = editedTransaction.items.reduce((sum, item) => {
-        return sum + (item.quantity * item.price);
-      }, 0);
-      
-      setEditedTransaction({
-        ...editedTransaction,
-        amount: total
-      });
-    }
-  };
-
-  const handleTypeChange = (text: string) => {
-    if (text === 'income' || text === 'expense') {
-      setEditedTransaction({ ...editedTransaction, type: text });
-    }
-  };
-
-  const handleSave = () => {
-    let hasError = false;
-    
-    if (!validateInput('amount', editedTransaction.amount)) {
-      hasError = true;
-    }
-    
-    if (editedTransaction.items) {
-      editedTransaction.items.forEach((item, index) => {
-        if (!validateInput(`productName_${index}`, item.productName)) {
-          hasError = true;
+  const handleLogout = async () => {
+    Alert.alert(
+      "Xác nhận đăng xuất",
+      "Bạn có chắc chắn muốn đăng xuất không?",
+      [
+        { text: "Hủy", style: "cancel" },
+        { 
+          text: "Đăng xuất", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem("token");
+              await AsyncStorage.removeItem("userId");
+              // Chuyển hướng về trang đăng nhập sử dụng expo-router
+              router.replace('/pages/login');
+            } catch (error) {
+              console.error("Lỗi khi đăng xuất:", error);
+              Alert.alert("Lỗi", "Không thể đăng xuất. Vui lòng thử lại!");
+            }
+          }
         }
-        if (!validateInput(`price_${index}`, item.price)) {
-          hasError = true;
-        }
-        if (!validateInput(`quantity_${index}`, item.quantity)) {
-          hasError = true;
-        }
-      });
-    }
-    
-    if (hasError) {
-      Alert.alert('Lỗi', 'Vui lòng kiểm tra lại thông tin nhập vào');
-      return;
-    }
-    
-    onSave();
+      ]
+    );
   };
 
-  const handleUpdateItem = (index: number, field: string, value: string | number) => {
-    const fieldId = `${field}_${index}`;
-    if (field === "productName") {
-      if (validateInput('productName', value)) {
-        updateItem(index, field, value);
-      }
-    } else if (field === "price") {
-      const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
-      if (validateInput('price', numValue)) {
-        updateItem(index, field, numValue);
-        setTimeout(calculateTotal, 0);
-      }
-    } else if (field === "quantity") {
-      const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
-      if (validateInput('quantity', numValue)) {
-        updateItem(index, field, numValue);
-        setTimeout(calculateTotal, 0);
-      }
-    }
-  };
+  const renderMainScreen = () => (
+    <View style={modalStyles.container}>
+      <View style={modalStyles.header}>
+        <Text style={modalStyles.title}>Cài đặt</Text>
+        <TouchableOpacity onPress={onClose} style={modalStyles.closeButton}>
+          <Ionicons name="close" size={24} color="#28A745" />
+        </TouchableOpacity>
+      </View>
 
-  const handleAmountChange = (text: string) => {
-    const numValue = parseFloat(text) || 0;
-    if (validateInput('amount', numValue)) {
-      setEditedTransaction({
-        ...editedTransaction,
-        amount: numValue,
-      });
-    }
-  };
+      <ScrollView style={modalStyles.content}>
+        <TouchableOpacity 
+          style={modalStyles.menuItem}
+          onPress={() => setCurrentScreen('budget')}
+        >
+          <Ionicons name="wallet-outline" size={24} color="#28A745" style={modalStyles.menuIcon} />
+          <Text style={modalStyles.menuText}>Quản lý ngân sách</Text>
+          <Ionicons name="chevron-forward" size={20} color="#6C757D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={modalStyles.menuItem}
+          onPress={() => setCurrentScreen('account')}
+        >
+          <Ionicons name="person-outline" size={24} color="#28A745" style={modalStyles.menuIcon} />
+          <Text style={modalStyles.menuText}>Thông tin tài khoản</Text>
+          <Ionicons name="chevron-forward" size={20} color="#6C757D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={modalStyles.menuItem}>
+          <Ionicons name="notifications-outline" size={24} color="#28A745" style={modalStyles.menuIcon} />
+          <Text style={modalStyles.menuText}>Thông báo</Text>
+          <Ionicons name="chevron-forward" size={20} color="#6C757D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={modalStyles.menuItem}>
+          <Ionicons name="color-palette-outline" size={24} color="#28A745" style={modalStyles.menuIcon} />
+          <Text style={modalStyles.menuText}>Giao diện</Text>
+          <Ionicons name="chevron-forward" size={20} color="#6C757D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={modalStyles.menuItem}>
+          <Ionicons name="shield-checkmark-outline" size={24} color="#28A745" style={modalStyles.menuIcon} />
+          <Text style={modalStyles.menuText}>Bảo mật</Text>
+          <Ionicons name="chevron-forward" size={20} color="#6C757D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={modalStyles.menuItem}>
+          <Ionicons name="help-circle-outline" size={24} color="#28A745" style={modalStyles.menuIcon} />
+          <Text style={modalStyles.menuText}>Trợ giúp & Hỗ trợ</Text>
+          <Ionicons name="chevron-forward" size={20} color="#6C757D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[modalStyles.menuItem, modalStyles.logoutItem]}
+          onPress={handleLogout}
+        >
+          <Ionicons name="log-out-outline" size={24} color="#DC3545" style={modalStyles.menuIcon} />
+          <Text style={[modalStyles.menuText, modalStyles.logoutText]}>Đăng xuất</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
+
+  const renderBudgetScreen = () => (
+    <View style={modalStyles.container}>
+      <View style={modalStyles.header}>
+        <TouchableOpacity onPress={() => setCurrentScreen('main')} style={modalStyles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#28A745" />
+        </TouchableOpacity>
+        <Text style={modalStyles.title}>Quản lý ngân sách</Text>
+        <TouchableOpacity onPress={onClose} style={modalStyles.closeButton}>
+          <Ionicons name="close" size={24} color="#28A745" />
+        </TouchableOpacity>
+      </View>
+
+      <BudgetScreen 
+        onBudgetSaved={() => {
+          onBudgetSaved();
+          setCurrentScreen('main');
+        }} 
+        totalExpense={totalExpense}
+        transactions={transactions}
+      />
+    </View>
+  );
+
+  const renderAccountScreen = () => (
+    <View style={modalStyles.container}>
+      <View style={modalStyles.header}>
+        <TouchableOpacity onPress={() => setCurrentScreen('main')} style={modalStyles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#28A745" />
+        </TouchableOpacity>
+        <Text style={modalStyles.title}>Thông tin tài khoản</Text>
+        <TouchableOpacity onPress={onClose} style={modalStyles.closeButton}>
+          <Ionicons name="close" size={24} color="#28A745" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView style={modalStyles.content}>
+        <View style={modalStyles.accountInfoContainer}>
+          <View style={modalStyles.avatarContainer}>
+            <Ionicons name="person-circle" size={80} color="#28A745" />
+          </View>
+          <Text style={modalStyles.userName}>Người dùng</Text>
+          <Text style={modalStyles.userEmail}>user@example.com</Text>
+
+          <TouchableOpacity style={modalStyles.editProfileButton}>
+            <Text style={modalStyles.editProfileText}>Chỉnh sửa thông tin</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={modalStyles.accountSection}>
+          <Text style={modalStyles.sectionTitle}>Thông tin cá nhân</Text>
+          
+          <View style={modalStyles.infoItem}>
+            <Text style={modalStyles.infoLabel}>Họ và tên</Text>
+            <Text style={modalStyles.infoValue}>Người dùng</Text>
+          </View>
+          
+          <View style={modalStyles.infoItem}>
+            <Text style={modalStyles.infoLabel}>Email</Text>
+            <Text style={modalStyles.infoValue}>user@example.com</Text>
+          </View>
+          
+          <View style={modalStyles.infoItem}>
+            <Text style={modalStyles.infoLabel}>Số điện thoại</Text>
+            <Text style={modalStyles.infoValue}>0123456789</Text>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
+  );
 
   return (
     <Modal
       animationType="slide"
       transparent={true}
-      visible={!!selectedTransaction}
+      visible={visible}
       onRequestClose={onClose}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>
-            {isEditing ? "Sửa giao dịch" : "Chi tiết giao dịch"}
-          </Text>
-          <ScrollView>
-            {isEditing ? (
-              <View style={styles.editContainer}>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Loại giao dịch</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={editedTransaction.type}
-                    onChangeText={handleTypeChange}
-                    placeholder="Nhập loại (income/expense)"
-                    testID="transaction-type-input"
-                  />
-                </View>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Danh mục</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={editedTransaction.category}
-                    onChangeText={(text) =>
-                      setEditedTransaction({ ...editedTransaction, category: text })
-                    }
-                    placeholder="Nhập danh mục"
-                    testID="category-input"
-                  />
-                </View>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Số tiền (VNĐ)</Text>
-                  <TextInput
-                    style={[styles.input, errors['amount'] ? styles.inputError : null]}
-                    value={editedTransaction.amount.toString()}
-                    keyboardType="numeric"
-                    onChangeText={handleAmountChange}
-                    placeholder="Nhập số tiền"
-                    maxLength={10}
-                    testID="amount-input"
-                  />
-                  {errors['amount'] && <Text style={styles.errorText}>{errors['amount']}</Text>}
-                </View>
-                <Text style={styles.sectionTitle}>Danh sách sản phẩm</Text>
-                {editedTransaction.items?.map((item: TransactionItem, index: number) => (
-                  <View key={index} style={styles.itemCard}>
-                    <View style={styles.itemField}>
-                      <Text style={styles.itemLabel}>Tên sản phẩm</Text>
-                      <TextInput
-                        style={[styles.itemInput, errors[`productName_${index}`] ? styles.inputError : null]}
-                        value={item.productName}
-                        onChangeText={(text) => handleUpdateItem(index, "productName", text)}
-                        placeholder="Tên sản phẩm"
-                        maxLength={50}
-                        testID={`product-name-${index}`}
-                      />
-                      {errors[`productName_${index}`] && <Text style={styles.errorText}>{errors[`productName_${index}`]}</Text>}
-                    </View>
-                    <View style={styles.itemField}>
-                      <Text style={styles.itemLabel}>Số lượng</Text>
-                      <TextInput
-                        style={[styles.itemInput, errors[`quantity_${index}`] ? styles.inputError : null]}
-                        value={item.quantity.toString()}
-                        keyboardType="numeric"
-                        onChangeText={(text) => handleUpdateItem(index, "quantity", text)}
-                        placeholder="Số lượng"
-                        testID={`quantity-${index}`}
-                      />
-                      {errors[`quantity_${index}`] && <Text style={styles.errorText}>{errors[`quantity_${index}`]}</Text>}
-                    </View>
-                    <View style={styles.itemField}>
-                      <Text style={styles.itemLabel}>Giá (VNĐ)</Text>
-                      <TextInput
-                        style={[styles.itemInput, errors[`price_${index}`] ? styles.inputError : null]}
-                        value={item.price.toString()}
-                        keyboardType="numeric"
-                        onChangeText={(text) => handleUpdateItem(index, "price", text)}
-                        placeholder="Giá"
-                        maxLength={10}
-                        testID={`price-${index}`}
-                      />
-                      {errors[`price_${index}`] && <Text style={styles.errorText}>{errors[`price_${index}`]}</Text>}
-                    </View>
-                    <TouchableOpacity
-                      onPress={() => removeItem(index)}
-                      style={styles.removeItemButton}
-                      testID={`remove-item-${index}`} // Thêm testID cho nút xóa
-                    >
-                      <Ionicons name="trash-outline" size={20} color="#fff" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
-                <TouchableOpacity onPress={addItem} style={styles.addItemButton} testID="add-item-button">
-                  <Text style={styles.buttonText}>+ Thêm sản phẩm</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <>
-                <Text style={styles.sectionTitle}>Danh sách sản phẩm</Text>
-                {selectedTransaction.items && selectedTransaction.items.length > 0 ? (
-                  selectedTransaction.items.map((item: TransactionItem, index: number) => (
-                    <View key={index} style={styles.modalItem}>
-                      <Text style={styles.itemText}>{item.productName}</Text>
-                      <Text style={styles.itemText}>
-                        {item.quantity} x {item.price.toLocaleString()} đ
-                      </Text>
-                    </View>
-                  ))
-                ) : (
-                  <Text style={styles.noItemsText}>Không có sản phẩm nào.</Text>
-                )}
-                <Text style={styles.modalTotal}>
-                  Tổng cộng: {selectedTransaction.amount.toLocaleString()} đ
-                </Text>
-              </>
-            )}
-          </ScrollView>
-          <View style={styles.modalButtons}>
-            {isEditing ? (
-              <>
-                <TouchableOpacity onPress={handleSave} style={styles.saveButton} testID="save-button">
-                  <Text style={styles.buttonText}>Lưu</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onCancel} style={styles.cancelButton} testID="cancel-button">
-                  <Text style={styles.buttonText}>Hủy</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity onPress={onEdit} style={styles.editButton} testID="edit-button">
-                  <Text style={styles.buttonText}>Sửa</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => onDelete(selectedTransaction._id)}
-                  style={styles.deleteButton}
-                  testID="delete-button"
-                >
-                  <Text style={styles.buttonText}>Xóa</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton} testID="close-button">
-                  <Text style={styles.closeButtonText}>Đóng</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        </View>
+      <View style={modalStyles.modalContainer}>
+        {currentScreen === 'main' && renderMainScreen()}
+        {currentScreen === 'budget' && renderBudgetScreen()}
+        {currentScreen === 'account' && renderAccountScreen()}
       </View>
     </Modal>
   );
 };
+
+const modalStyles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  container: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: '90%',
+    paddingBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9ECEF',
+  },
+  backButton: {
+    padding: 5,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#28A745',
+    flex: 1,
+    textAlign: 'center',
+  },
+  closeButton: {
+    padding: 5,
+  },
+  content: {
+    flex: 1,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9ECEF',
+  },
+  menuIcon: {
+    marginRight: 15,
+  },
+  menuText: {
+    fontSize: 16,
+    color: '#212529',
+    flex: 1,
+  },
+  logoutItem: {
+    marginTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#E9ECEF',
+  },
+  logoutText: {
+    color: '#DC3545',
+  },
+  accountInfoContainer: {
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9ECEF',
+  },
+  avatarContainer: {
+    marginBottom: 10,
+  },
+  userName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#212529',
+    marginBottom: 5,
+  },
+  userEmail: {
+    fontSize: 14,
+    color: '#6C757D',
+    marginBottom: 15,
+  },
+  editProfileButton: {
+    backgroundColor: '#28A745',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  editProfileText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  accountSection: {
+    padding: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#28A745',
+    marginBottom: 15,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9ECEF',
+  },
+  infoLabel: {
+    fontSize: 16,
+    color: '#6C757D',
+  },
+  infoValue: {
+    fontSize: 16,
+    color: '#212529',
+    fontWeight: '500',
+  },
+});

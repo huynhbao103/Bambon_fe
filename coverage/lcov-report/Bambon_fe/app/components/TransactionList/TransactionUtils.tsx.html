@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -102,78 +102,78 @@
 <a name='L37'></a><a href='#L37'>37</a>
 <a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { FilterType } from '../types';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { FilterType } from '../../types';
 &nbsp;
-export const isDateInRange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ransactionDate: string, filter: FilterType): boolean =&gt; {</span>
-  const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
-  const date = <span class="cstat-no" title="statement not covered" >new Date(transactionDate);</span>
+export const isDateInRange = (transactionDate: string, filter: FilterType): boolean =&gt; {
+  const now = new Date();
+  const date = new Date(transactionDate);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  switch (filter) {</span>
+  switch (filter) {
     case 'day':
-<span class="cstat-no" title="statement not covered" >      return (</span>
+      return (
         date.getDate() === now.getDate() &amp;&amp;
         date.getMonth() === now.getMonth() &amp;&amp;
         date.getFullYear() === now.getFullYear()
       );
     case 'week':
-      const startOfWeek = <span class="cstat-no" title="statement not covered" >new Date(now);</span>
-<span class="cstat-no" title="statement not covered" >      startOfWeek.setDate(now.getDate() - now.getDay());</span>
-<span class="cstat-no" title="statement not covered" >      return date &gt;= startOfWeek;</span>
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      return date &gt;= startOfWeek;
     case 'month':
-<span class="cstat-no" title="statement not covered" >      return date.getMonth() === now.getMonth() &amp;&amp; date.getFullYear() === now.getFullYear();</span>
+      return date.getMonth() === now.getMonth() &amp;&amp; date.getFullYear() === now.getFullYear();
     case 'year':
-<span class="cstat-no" title="statement not covered" >      return date.getFullYear() === now.getFullYear();</span>
+      return date.getFullYear() === now.getFullYear();
     default:
-<span class="cstat-no" title="statement not covered" >      return false;</span>
+      return false;
   }
 };
 &nbsp;
-export const formatAmount = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(a</span>mount: number): string =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  if (amount &gt;= 1000000000) {</span>
-<span class="cstat-no" title="statement not covered" >    return (amount / 1000000000).toFixed(1) + ' tỷ';</span>
+export const formatAmount = (amount: number): string =&gt; {
+  if (amount &gt;= 1000000000) {
+    return (amount / 1000000000).toFixed(1) + ' tỷ';
   }
-<span class="cstat-no" title="statement not covered" >  if (amount &gt;= 1000000) {</span>
-<span class="cstat-no" title="statement not covered" >    return (amount / 1000000).toFixed(1) + ' triệu';</span>
+  if (amount &gt;= 1000000) {
+    return (amount / 1000000).toFixed(1) + ' triệu';
   }
-<span class="cstat-no" title="statement not covered" >  if (amount &gt;= 1000) {</span>
-<span class="cstat-no" title="statement not covered" >    return (amount / 1000).toFixed(0) + 'k';</span>
+  if (amount &gt;= 1000) {
+    return (amount / 1000).toFixed(0) + 'k';
   }
-<span class="cstat-no" title="statement not covered" >  return amount.toString();</span>
+  return amount.toString();
 };</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -181,7 +181,7 @@ export const formatAmount = <span class="cstat-no" title="statement not covered"
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-24T20:43:11.727Z
+                at 2025-03-25T04:51:08.180Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

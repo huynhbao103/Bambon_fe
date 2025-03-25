@@ -4,7 +4,6 @@ import { TransactionModal } from '../../app/components/TransactionModal';
 import { Transaction, TransactionItem } from '../../app/types';
 import { Alert } from 'react-native';
 
-// Mock các thư viện
 jest.mock('expo-font', () => ({
   loadAsync: jest.fn(),
   isLoaded: jest.fn(() => true),
@@ -25,7 +24,6 @@ jest.mock('@expo/vector-icons', () => {
   };
 });
 
-// Mock dữ liệu giao dịch
 const mockTransaction: Transaction = {
   _id: '1',
   date: '2025-03-24T10:00:00Z',
@@ -37,7 +35,6 @@ const mockTransaction: Transaction = {
   ],
 };
 
-// Mock các hàm props
 const mockOnClose = jest.fn();
 const mockOnEdit = jest.fn();
 const mockOnDelete = jest.fn();
@@ -195,19 +192,16 @@ describe('TransactionModal Functions', () => {
       const priceInput = getByTestId('price-0');
       const quantityInput = getByTestId('quantity-0');
   
-      // Cập nhật giá và số lượng
       await act(async () => {
         fireEvent.changeText(priceInput, '2000000');
         fireEvent.changeText(quantityInput, '3');
       });
   
-      // Kiểm tra hàm updateItem đã được gọi
       expect(mockUpdateItem).toHaveBeenCalledWith(0, 'price', 2000000);
       expect(mockUpdateItem).toHaveBeenCalledWith(0, 'quantity', 3);
   
       const expectedAmount = 2000000 * 3;
   
-      // Chờ cho setEditedTransaction được gọi với giá trị amount đúng
       await waitFor(() => {
         expect(mockSetEditedTransaction).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -215,9 +209,6 @@ describe('TransactionModal Functions', () => {
           })
         );
       });
-  
-      // Debug nếu cần
-      console.log(mockSetEditedTransaction.mock.calls);
     });
   });
   

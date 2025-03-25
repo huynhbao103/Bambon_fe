@@ -58,8 +58,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       } else if (numValue < 0) {
         newErrors[field] = 'Giá trị không được âm';
         isValid = false;
-      } else if (numValue > 1000000000) {
-        newErrors[field] = 'Giá trị không được quá 1 tỷ đồng';
+      } else if (numValue > 100000000000) {
+        newErrors[field] = 'Giá trị không được quá 100 tỷ đồng';
         isValid = false;
       } else {
         delete newErrors[field];

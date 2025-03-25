@@ -149,12 +149,16 @@ const ScanScreen = () => {
           <Text style={styles.resultText}>Dữ liệu giao dịch:</Text>
           <Text style={styles.recognizedText}>Loại: {transactionData.type}</Text>
           <Text style={styles.recognizedText}>Danh mục: {transactionData.category}</Text>
-          <Text style={styles.recognizedText}>Sản phẩm:</Text>
-          {transactionData.items.map((item: any, index: number) => (
-            <Text key={index} style={styles.recognizedText} testID={`transaction-item-${index}`}>
-              - {item.productName}: {item.quantity} x {item.price} VNĐ
-            </Text>
-          ))}
+          {transactionData.items && transactionData.items.length > 0 && (
+            <>
+              <Text style={styles.recognizedText}>Sản phẩm:</Text>
+              {transactionData.items.map((item: any, index: number) => (
+                <Text key={index} style={styles.recognizedText} testID={`transaction-item-${index}`}>
+                  - {item.productName}: {item.quantity} x {item.price} VNĐ
+                </Text>
+              ))}
+            </>
+          )}
           <Text style={styles.recognizedText}>Tổng tiền: {transactionData.amount} VNĐ</Text>
           <Text style={styles.recognizedText}>User ID: {transactionData.userId}</Text>
         </View>

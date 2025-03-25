@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from '../styles';
 import { Transaction, TransactionItem } from '../types';
 
+
 interface TransactionModalProps {
   selectedTransaction: Transaction | null;
   isEditing: boolean;
@@ -18,6 +19,7 @@ interface TransactionModalProps {
   removeItem: (index: number) => void;
   updateItem: (index: number, field: string, value: string | number) => void;
 }
+
 
 export const TransactionModal: React.FC<TransactionModalProps> = ({
   selectedTransaction,
@@ -34,13 +36,14 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   updateItem,
 }) => {
   if (!selectedTransaction || !editedTransaction) return null;
-  
+ 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+
 
   const validateInput = (field: string, value: string | number): boolean => {
     let isValid = true;
     const newErrors = {...errors};
-    
+   
     if (field === 'productName') {
       if (typeof value === 'string' && value.length > 50) {
         newErrors[field] = 'Tên sản phẩm không được quá 50 ký tự';
@@ -49,7 +52,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         delete newErrors[field];
       }
     }
-    
+   
     if (field === 'price' || field === 'amount') {
       const numValue = typeof value === 'string' ? parseFloat(value) : value;
       if (isNaN(numValue)) {
@@ -58,14 +61,14 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       } else if (numValue < 0) {
         newErrors[field] = 'Giá trị không được âm';
         isValid = false;
-      } else if (numValue > 1000000000) {
-        newErrors[field] = 'Giá trị không được quá 1 tỷ đồng';
+      } else if (numValue > 100000000000) {
+        newErrors[field] = 'Giá trị không được quá 100 tỷ đồng';
         isValid = false;
       } else {
         delete newErrors[field];
       }
     }
-    
+   
     if (field === 'quantity') {
       const numValue = typeof value === 'string' ? parseFloat(value) : value;
       if (isNaN(numValue)) {
@@ -78,10 +81,11 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         delete newErrors[field];
       }
     }
-    
+   
     setErrors(newErrors);
     return isValid;
   };
+
 
   const calculateTotal = () => {
     let total = 0;
@@ -89,8 +93,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       total = editedTransaction.items.reduce((sum, item) => {
         return sum + (item.quantity * item.price);
       }, 0);
-      
-      // Cập nhật tổng tiền
+     
       setEditedTransaction({
         ...editedTransaction,
         amount: total
@@ -98,22 +101,21 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
     }
   };
 
+
   const handleTypeChange = (text: string) => {
     if (text === 'income' || text === 'expense') {
       setEditedTransaction({ ...editedTransaction, type: text });
     }
   };
 
+
   const handleSave = () => {
-    // Kiểm tra tất cả các trường trước khi lưu
     let hasError = false;
-    
-    // Kiểm tra số tiền chính
+   
     if (!validateInput('amount', editedTransaction.amount)) {
       hasError = true;
     }
-    
-    // Kiểm tra từng mục sản phẩm
+   
     if (editedTransaction.items) {
       editedTransaction.items.forEach((item, index) => {
         if (!validateInput(`productName_${index}`, item.productName)) {
@@ -127,35 +129,44 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         }
       });
     }
-    
+   
     if (hasError) {
       Alert.alert('Lỗi', 'Vui lòng kiểm tra lại thông tin nhập vào');
       return;
     }
-    
+   
     onSave();
   };
 
+
   const handleUpdateItem = (index: number, field: string, value: string | number) => {
     const fieldId = `${field}_${index}`;
+    let processedValue = value;
+    let isValid = false;
+
     if (field === "productName") {
-      if (validateInput('productName', value)) {
-        updateItem(index, field, value);
+      isValid = validateInput('productName', value);
+      if (isValid) {
+        processedValue = value.toString().trim();
       }
-    } else if (field === "price") {
-      const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
-      if (validateInput('price', numValue)) {
-        updateItem(index, field, numValue);
-        setTimeout(calculateTotal, 0); // Tính tổng tiền sau khi cập nhật giá
+    } else if (field === "price" || field === "quantity") {
+      const numValue = typeof value === 'string' ? 
+        parseFloat(value.replace(/[^0-9.-]/g, '')) || 0 : value;
+      
+      isValid = validateInput(field, numValue);
+      if (isValid) {
+        processedValue = Math.max(0, numValue);
       }
-    } else if (field === "quantity") {
-      const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
-      if (validateInput('quantity', numValue)) {
-        updateItem(index, field, numValue);
-        setTimeout(calculateTotal, 0); // Tính tổng tiền sau khi cập nhật số lượng
+    }
+
+    if (isValid) {
+      updateItem(index, field, processedValue);
+      if (field === "price" || field === "quantity") {
+        calculateTotal();
       }
     }
   };
+
 
   const handleAmountChange = (text: string) => {
     const numValue = parseFloat(text) || 0;
@@ -166,6 +177,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       });
     }
   };
+
 
   return (
     <Modal
@@ -189,6 +201,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                     value={editedTransaction.type}
                     onChangeText={handleTypeChange}
                     placeholder="Nhập loại (income/expense)"
+                    testID="transaction-type-input"
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -200,6 +213,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                       setEditedTransaction({ ...editedTransaction, category: text })
                     }
                     placeholder="Nhập danh mục"
+                    testID="category-input"
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -211,6 +225,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                     onChangeText={handleAmountChange}
                     placeholder="Nhập số tiền"
                     maxLength={10}
+                    testID="amount-input"
                   />
                   {errors['amount'] && <Text style={styles.errorText}>{errors['amount']}</Text>}
                 </View>
@@ -225,6 +240,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                         onChangeText={(text) => handleUpdateItem(index, "productName", text)}
                         placeholder="Tên sản phẩm"
                         maxLength={50}
+                        testID={`product-name-${index}`}
                       />
                       {errors[`productName_${index}`] && <Text style={styles.errorText}>{errors[`productName_${index}`]}</Text>}
                     </View>
@@ -234,10 +250,9 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                         style={[styles.itemInput, errors[`quantity_${index}`] ? styles.inputError : null]}
                         value={item.quantity.toString()}
                         keyboardType="numeric"
-                        onChangeText={(text) =>
-                          handleUpdateItem(index, "quantity", text)
-                        }
+                        onChangeText={(text) => handleUpdateItem(index, "quantity", text)}
                         placeholder="Số lượng"
+                        testID={`quantity-${index}`}
                       />
                       {errors[`quantity_${index}`] && <Text style={styles.errorText}>{errors[`quantity_${index}`]}</Text>}
                     </View>
@@ -250,18 +265,20 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                         onChangeText={(text) => handleUpdateItem(index, "price", text)}
                         placeholder="Giá"
                         maxLength={10}
+                        testID={`price-${index}`}
                       />
                       {errors[`price_${index}`] && <Text style={styles.errorText}>{errors[`price_${index}`]}</Text>}
                     </View>
                     <TouchableOpacity
                       onPress={() => removeItem(index)}
                       style={styles.removeItemButton}
+                      testID={`remove-item-${index}`}
                     >
                       <Ionicons name="trash-outline" size={20} color="#fff" />
                     </TouchableOpacity>
                   </View>
                 ))}
-                <TouchableOpacity onPress={addItem} style={styles.addItemButton}>
+                <TouchableOpacity onPress={addItem} style={styles.addItemButton} testID="add-item-button">
                   <Text style={styles.buttonText}>+ Thêm sản phẩm</Text>
                 </TouchableOpacity>
               </View>
@@ -289,25 +306,26 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           <View style={styles.modalButtons}>
             {isEditing ? (
               <>
-                <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+                <TouchableOpacity onPress={handleSave} style={styles.saveButton} testID="save-button">
                   <Text style={styles.buttonText}>Lưu</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
+                <TouchableOpacity onPress={onCancel} style={styles.cancelButton} testID="cancel-button">
                   <Text style={styles.buttonText}>Hủy</Text>
                 </TouchableOpacity>
               </>
             ) : (
               <>
-                <TouchableOpacity onPress={onEdit} style={styles.editButton}>
+                <TouchableOpacity onPress={onEdit} style={styles.editButton} testID="edit-button">
                   <Text style={styles.buttonText}>Sửa</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => onDelete(selectedTransaction._id)}
                   style={styles.deleteButton}
+                  testID="delete-button"
                 >
                   <Text style={styles.buttonText}>Xóa</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton} testID="close-button">
                   <Text style={styles.closeButtonText}>Đóng</Text>
                 </TouchableOpacity>
               </>
@@ -317,4 +335,5 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       </View>
     </Modal>
   );
-}; 
+};
+

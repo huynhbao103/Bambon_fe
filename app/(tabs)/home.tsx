@@ -18,7 +18,7 @@ import { styles } from "../styles";
 import { HomeScreenProps, Transaction, FilterType } from "../types";
 import { Header } from "../components/Header";
 import { ChartSection } from "../components/ChartSection";
-import { TransactionList } from "../components/TransactionList";
+import { TransactionList } from "../components/list/TransactionList";
 import { TransactionModal } from "../components/TransactionModal";
 import { SettingsModal } from "../components/SettingsModal";
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { styles } from '../styles';
-import { FilterType } from '../types';
+import { styles } from '../../styles';
+import { FilterType } from '../../types';
+import { isDateInRange, formatAmount } from './TransactionUtils';
 
 interface TransactionListProps {
   transactions: any[];
@@ -26,47 +27,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   isExpanded,
   handleExpandCollapse,
   refreshing,
-  onRefresh
+  onRefresh,
 }) => {
-  const isDateInRange = (transactionDate: string) => {
-    const now = new Date();
-    const date = new Date(transactionDate);
-    
-    switch (filter) {
-      case "day":
-        return date.getDate() === now.getDate() &&
-          date.getMonth() === now.getMonth() &&
-          date.getFullYear() === now.getFullYear();
-      case "week":
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay());
-        return date >= startOfWeek;
-      case "month":
-        return date.getMonth() === now.getMonth() &&
-          date.getFullYear() === now.getFullYear();
-      case "year":
-        return date.getFullYear() === now.getFullYear();
-      default:
-        return false;
-    }
-  };
-
-  const filteredTransactions = transactions
-    .filter(t => isDateInRange(t.date))
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-  const formatAmount = (amount: number) => {
-    if (amount >= 1000000000) {
-      return (amount / 1000000000).toFixed(1) + ' tỷ';
-    }
-    if (amount >= 1000000) {
-      return (amount / 1000000).toFixed(1) + ' triệu';
-    }
-    if (amount >= 1000) {
-      return (amount / 1000).toFixed(0) + 'k';
-    }
-    return amount.toString();
-  };
+  const filteredTransactions = transactions.filter((t) => isDateInRange(t.date, filter));
 
   if (filteredTransactions.length === 0) {
     return (
@@ -83,7 +46,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
       onScroll={({ nativeEvent }) => {
         const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
         const isEndReached = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
-        
+
         if (isEndReached && onLoadMore && !loadingMore) {
           onLoadMore();
         }
@@ -105,7 +68,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
           <Text
             style={[
               styles.transactionAmount,
-              transaction.type === 'income' ? styles.incomeColor : styles.expenseColor
+              transaction.type === 'income' ? styles.incomeColor : styles.expenseColor,
             ]}
           >
             {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}

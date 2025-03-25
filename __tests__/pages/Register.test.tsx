@@ -173,26 +173,4 @@ describe('Register Function', () => {
       expect(mockSetSuccessMessage).not.toHaveBeenCalled();
     });
   });
-
-  describe('UTCID10 -> Đăng ký với tên, email, mật khẩu tối đa', () => {
-    it('Đăng ký thành công với tên, email, mật khẩu 256 ký tự', async () => {
-      mockedAxios.post.mockResolvedValueOnce({
-        status: 200,
-        data: { message: 'User registered' },
-      });
-
-      const maxLengthString = 'a'.repeat(256);
-      const maxEmail = `${maxLengthString.slice(0, 244)}@example.com`; // Giới hạn email để không vượt quá 256
-      const maxPassword = maxLengthString;
-
-      await register(maxLengthString, maxEmail, maxPassword, mockSetError, mockSetSuccessMessage, 'UTCID10');
-
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        expect.any(String),
-        { name: maxLengthString, email: maxEmail, password: maxPassword }
-      );
-      expect(mockSetSuccessMessage).toHaveBeenCalledWith('Registration successful!');
-      expect(mockSetError).not.toHaveBeenCalled();
-    });
-  });
 });

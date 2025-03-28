@@ -29,7 +29,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   refreshing,
   onRefresh,
 }) => {
-  const filteredTransactions = transactions.filter((t) => isDateInRange(t.date, filter));
+  const filteredTransactions = transactions
+    .filter((t) => isDateInRange(t.date, filter))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   if (filteredTransactions.length === 0) {
     return (

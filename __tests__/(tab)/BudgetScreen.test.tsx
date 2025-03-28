@@ -60,20 +60,20 @@ import {
     mockedAxios.post.mockResolvedValue({ data: {} });
   });
   
-  describe('BudgetScreen', () => {
+describe('BudgetScreen', () => {
   describe('formatCurrency', () => {
-    it('UTCID01 - định dạng số tiền sang tiền tệ Việt Nam', () => {
-      expect(formatCurrency('500000')).toBe('500.000');
-      expect(formatCurrency('1000000')).toBe('1.000.000');
-      expect(formatCurrency('0')).toBe('0');
-    });
-
-    it('UTCID02 - loại bỏ ký tự không phải số', () => {
-      expect(formatCurrency('500 000')).toBe('500.000');
-      expect(formatCurrency('1,000,000')).toBe('1.000.000');
-    });
+      it('UTCID01 - định dạng số tiền sang tiền tệ Việt Nam', () => {
+        expect(formatCurrency('500000')).toBe('500.000');
+        expect(formatCurrency('1000000')).toBe('1.000.000');
+        expect(formatCurrency('0')).toBe('0');
+      });
+  
+      it('UTCID02 - loại bỏ ký tự không phải số', () => {
+        expect(formatCurrency('500 000')).toBe('500.000');
+        expect(formatCurrency('1,000,000')).toBe('1.000.000');
+      });
   });
-
+  
   describe('handleBudgetChange', () => {
     it('UTCID03 - gọi setter với giá trị số', () => {
       handleBudgetChange('500000', mockSetter);

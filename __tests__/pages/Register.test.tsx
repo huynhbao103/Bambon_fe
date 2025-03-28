@@ -9,7 +9,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 const mockSetError = jest.fn();
 const mockSetSuccessMessage = jest.fn();
 
-describe('Register Function', () => {
+describe('register', () => {
   beforeAll(() => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });

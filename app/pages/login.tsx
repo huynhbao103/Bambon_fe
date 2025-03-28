@@ -21,8 +21,8 @@ export const login = async (
     return;
   }
 
-  if (!password || password.length < 6 || password.length > 50) {
-    const errorMsg = 'Mật khẩu phải có ít nhất 6 ký tự và nhỏ hơn 50 ký tự!';
+  if (!password || password.length < 6 || password.length > 256) { // Tăng giới hạn lên 256
+    const errorMsg = 'Mật khẩu phải có ít nhất 6 ký tự và nhỏ hơn 256 ký tự!';
     console.error(`Lỗi đăng nhập${testId ? ` [${testId}]` : ''}:`, errorMsg);
     setError(errorMsg);
     return;
@@ -30,14 +30,11 @@ export const login = async (
 
   try {
     console.log('Đang gửi yêu cầu đăng nhập...');
-
     const response = await axios.post<{ token: string }>(`${BACKEND_URL}/auth/login`, {
       email,
       password,
     });
-
     console.log('Phản hồi từ server:', response.data);
-
     const token: string = response.data.token;
 
     await AsyncStorage.setItem('token', token);

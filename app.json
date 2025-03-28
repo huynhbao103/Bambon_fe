@@ -13,11 +13,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "/assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.huynhbao103.Bambon_Fe",
-      "versionCode":1
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +39,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e33c792f-228d-4de3-8646-0d79e538cba5"
+      }
     }
   }
 }

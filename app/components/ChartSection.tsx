@@ -1,318 +1,272 @@
 import React, { useMemo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, ScrollView, Animated } from 'react-native';
-import { PieChart } from "react-native-chart-kit";
-import { AbstractChartConfig } from "react-native-chart-kit/dist/AbstractChart";
-import { styles } from '../styles/index';
-import { FilterType } from '../types';
+import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { BarChart } from 'react-native-chart-kit';
+import { styles } from '../styles/index_char';
+import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
-interface ChartSectionProps {
-  dailyExpenses: { date: string; amount: number; type: 'income' | 'expense', category: string }[];
-  filter: FilterType;
-  setFilter: (filter: FilterType) => void;
+type FilterType = 'day' | 'week' | 'month' | 'year';
+
+interface Transaction {
+  date: string;
+  amount: number;
+  type: 'income' | 'expense';
+  category: string;
 }
 
-const useFilteredTransactions = (dailyExpenses: ChartSectionProps['dailyExpenses'], filter: FilterType) => {
-  return useMemo(() => {
-    const isDateInRange = (transactionDate: Date) => {
-      const now = new Date();
-      const date = new Date(transactionDate);
-      
-      switch (filter) {
-        case "day":
-          return date.getDate() === now.getDate() &&
-            date.getMonth() === now.getMonth() &&
-            date.getFullYear() === now.getFullYear();
-        case "week":
-          const startOfWeek = new Date(now);
-          startOfWeek.setDate(now.getDate() - now.getDay());
-          return date >= startOfWeek;
-        case "month":
-          return date.getMonth() === now.getMonth() &&
-            date.getFullYear() === now.getFullYear();
-        case "year":
-          return date.getFullYear() === now.getFullYear();
-        default:
-          return false;
-      }
-    };
+interface ChartSectionProps {
+  dailyExpenses?: Transaction[];
+  filter: FilterType;
+  setFilter: (filter: FilterType) => void;
+  currency?: string;
+}
 
-    return dailyExpenses.filter(transaction => 
-      isDateInRange(new Date(transaction.date))
-    );
-  }, [dailyExpenses, filter]);
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const FILTERS: FilterType[] = ['day', 'week', 'month', 'year'];
+const FILTER_LABELS = {
+  day: 'Ngày',
+  week: 'Tuần',
+  month: 'Tháng',
+  year: 'Năm'
 };
 
-const useCategoryData = (filteredTransactions: ReturnType<typeof useFilteredTransactions>, type: 'income' | 'expense') => {
-  return useMemo(() => {
-    const transactions = filteredTransactions.filter(t => t.type === type);
-    const categoryMap = new Map<string, number>();
-    const total = transactions.reduce((sum, t) => sum + t.amount, 0);
-
-    transactions.forEach(transaction => {
-      const currentAmount = categoryMap.get(transaction.category) || 0;
-      categoryMap.set(transaction.category, currentAmount + transaction.amount);
-    });
-
-    const colors = type === 'income' 
-      ? [
-          '#2ecc71', // Xanh lá tươi
-          '#3498db', // Xanh dương
-          '#9b59b6', // Tím
-          '#f1c40f', // Vàng
-          '#1abc9c', // Ngọc lục bảo
-          '#e67e22', // Cam
-          '#34495e', // Xám đậm
-          '#16a085', // Xanh lá đậm
-          '#2980b9', // Xanh dương đậm
-          '#8e44ad', // Tím đậm
-        ]
-      : [
-          '#e74c3c', // Đỏ
-          '#e91e63', // Hồng
-          '#f44336', // Đỏ tươi
-          '#d32f2f', // Đỏ đậm
-          '#c2185b', // Hồng đậm
-          '#b71c1c', // Đỏ sẫm
-          '#ff1744', // Đỏ tươi
-          '#ff4081', // Hồng tươi
-          '#ff5252', // Đỏ nhạt
-          '#ff867c', // Đỏ cam
-        ];
-
-    const chartData = Array.from(categoryMap.entries()).map(([category, amount], index) => ({
-      name: category,
-      amount,
-      percentage: ((amount / total) * 100).toFixed(1),
-      color: colors[index % colors.length],
-      legendFontColor: "#333",
-      legendFontSize: 12,
-      legendFontWeight: "600"
-    }));
-
-    return {
-      data: chartData,
-      total,
-      categories: chartData
-    };
-  }, [filteredTransactions, type]);
-};
-
-const ChartTitle: React.FC<{ filter: FilterType }> = ({ filter }) => {
-  const title = useMemo(() => {
+const getDateRangeFilter = (filter: FilterType) => {
+  const now = new Date();
+  const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+  
+  return (transactionDate: Date) => {
+    const date = new Date(transactionDate);
     switch (filter) {
-      case "day": return "Thu chi trong ngày";
-      case "week": return "Thu chi trong tuần";
-      case "month": return "Thu chi trong tháng";
-      case "year": return "Thu chi trong năm";
-      default: return "Thu chi";
-    }
-  }, [filter]);
-
-  return <Text style={styles.chartTitle}>{title}</Text>;
-};
-
-const formatAmount = (amount: number) => {
-  if (amount >= 1000000000) {
-    return (amount / 1000000000).toFixed(1) + ' tỷ';
-  }
-  if (amount >= 1000000) {
-    return (amount / 1000000).toFixed(1) + ' triệu';
-  }
-  if (amount >= 1000) {
-    return (amount / 1000).toFixed(0) + 'k';
-  }
-  return amount.toString();
-};
-
-export const ChartSection: React.FC<ChartSectionProps> = ({
-  dailyExpenses,
-  filter,
-  setFilter,
-}) => {
-  const chartConfig: AbstractChartConfig = {
-    backgroundColor: "#fff",
-    backgroundGradientFrom: "#fff",
-    backgroundGradientTo: "#fff",
-    decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 16
-    },
-    propsForLabels: {
-      fontSize: 14,
-      fontWeight: '600'
-    },
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: "#28a745"
-    },
-    propsForBackgroundLines: {
-      strokeDasharray: "", // solid line
-      strokeWidth: 1,
-      stroke: "#e0e0e0"
+      case 'day':
+        return date >= startOfDay;
+      case 'week':
+        const startOfWeek = new Date(startOfDay);
+        startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay());
+        return date >= startOfWeek;
+      case 'month':
+        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      case 'year':
+        return date.getFullYear() === now.getFullYear();
+      default:
+        return true;
     }
   };
+};
 
-  const filteredTransactions = useFilteredTransactions(dailyExpenses, filter);
-  const incomeData = useCategoryData(filteredTransactions, 'income');
-  const expenseData = useCategoryData(filteredTransactions, 'expense');
+const formatAmount = (amount: number | undefined, currency = '₫'): string => {
+  if (amount === undefined || isNaN(amount)) return `0 ${currency}`;
+  
+  const absAmount = Math.abs(amount);
+  let formatted = '';
+  
+  if (absAmount >= 1000000000) {
+    formatted = `${(amount / 1000000000).toFixed(1)} tỷ`;
+  } else if (absAmount >= 1000000) {
+    formatted = `${(amount / 1000000).toFixed(1)} tr`;
+  } else if (absAmount >= 1000) {
+    formatted = `${(amount / 1000).toFixed(0)}k`;
+  } else {
+    formatted = amount.toLocaleString('vi-VN');
+  }
+  
+  return `${formatted} ${currency}`;
+};
+
+const useChartData = (transactions: Transaction[] = [], filter: FilterType) => {
+  const filteredTransactions = useMemo(() => {
+    const isInRange = getDateRangeFilter(filter);
+    return transactions.filter(t => isInRange(new Date(t.date)));
+  }, [transactions, filter]);
+
+  return useMemo(() => {
+    const dateMap = new Map<string, { income: number; expense: number }>();
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    filteredTransactions.forEach(t => {
+      const dateKey = new Date(t.date).toLocaleDateString('vi-VN', {
+        day: 'numeric',
+        month: 'short'
+      });
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, { income: 0, expense: 0 });
+      }
+
+      const dateData = dateMap.get(dateKey)!;
+      if (t.type === 'income') {
+        dateData.income += t.amount;
+        totalIncome += t.amount;
+      } else {
+        dateData.expense += t.amount;
+        totalExpense += t.amount;
+      }
+    });
+
+    const sortedDates = Array.from(dateMap.keys()).sort((a, b) => {
+      return new Date(a).getTime() - new Date(b).getTime();
+    });
+
+    return {
+      labels: sortedDates,
+      incomeData: sortedDates.map(date => dateMap.get(date)!.income),
+      expenseData: sortedDates.map(date => dateMap.get(date)!.expense),
+      totals: {
+        income: totalIncome,
+        expense: totalExpense,
+        balance: totalIncome - totalExpense
+      }
+    };
+  }, [filteredTransactions]);
+};
+
+const chartConfig = {
+  backgroundGradientFrom: '#fff',
+  backgroundGradientTo: '#fff',
+  decimalPlaces: 0,
+  barPercentage: 0.6,
+  propsForBackgroundLines: {
+    strokeWidth: 1,
+    stroke: '#e9ecef'
+  },
+  propsForLabels: {
+    fontSize: 10
+  },
+  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+};
+
+export const ChartSection: React.FC<ChartSectionProps> = React.memo(({
+  dailyExpenses = [],
+  filter,
+  setFilter,
+  currency = '₫'
+}) => {
+  const { labels, incomeData, expenseData, totals } = useChartData(dailyExpenses, filter);
+  const chartWidth = Math.max(SCREEN_WIDTH - 32, labels.length * 70);
 
   const handleFilterPress = useCallback((newFilter: FilterType) => {
     setFilter(newFilter);
   }, [setFilter]);
 
+  const renderChart = (title: string, data: number[], color: string) => {
+    if (!data.length || data.every(val => val === 0)) {
+      return (
+        <Animated.View entering={FadeInDown.duration(300)}>
+          <Text style={styles.chartTitle}>{title}</Text>
+          <Text style={styles.noDataText}>Không có dữ liệu</Text>
+        </Animated.View>
+      );
+    }
+
+    return (
+      <Animated.View entering={FadeInDown.duration(300)}>
+        <Text style={styles.chartTitle}>{title}</Text>
+        <BarChart
+          yAxisLabel=""
+          data={{
+            labels,
+            datasets: [{
+              data,
+              colors: data.map(() => (opacity: number) => color),
+            }]
+          }}
+          width={chartWidth}
+          height={200}
+          chartConfig={{
+            ...chartConfig,
+            fillShadowGradient: color,
+            labelColor: () => '#6c757d',
+          }}
+          style={styles.chartCard}
+          yAxisSuffix={` ${currency}`}
+          fromZero
+          showBarTops={false}
+          withVerticalLabels={true}
+          verticalLabelRotation={labels.length > 5 ? 45 : 0}
+        />
+      </Animated.View>
+    );
+  };
+
   return (
-    <>
-      <View style={styles.chartContainer}>
-        <ChartTitle filter={filter} />
-        
-        <View style={styles.totalContainer}>
-          <View style={styles.totalBlock}>
-            <Text style={styles.totalLabel}>Tổng thu</Text>
-            <Text style={[styles.totalAmount, { color: '#2ecc71' }]}>
-              {formatAmount(incomeData.total)} đ
-            </Text>
-          </View>
-          <View style={styles.totalBlock}>
-            <Text style={styles.totalLabel}>Tổng chi</Text>
-            <Text style={[styles.totalAmount, { color: '#e74c3c' }]}>
-              {formatAmount(expenseData.total)} đ
-            </Text>
-          </View>
+    <View style={styles.chartContainer}>
+      {/* Summary Section */}
+      <View style={styles.totalContainer}>
+        <View style={styles.totalBlock}>
+          <Ionicons name="arrow-up-circle" size={24} color="#2ecc71" />
+          <Text style={styles.totalLabel}>Thu nhập</Text>
+          <Text style={[styles.totalAmount, { color: '#2ecc71' }]}>
+            {formatAmount(totals.income, currency)}
+          </Text>
         </View>
 
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          nestedScrollEnabled={true}
-          contentContainerStyle={{ paddingHorizontal: 5, flexGrow: 1 }}
-        >
-          <View style={{ flexDirection: 'row', paddingVertical: 10, justifyContent: 'space-between' }}>
-            {incomeData.data.length > 0 && (
-              <View style={{ marginRight: 20, width: 400 }}>
-                <Text style={styles.chartSubtitle}>Thu nhập theo danh mục</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <PieChart
-                    data={incomeData.data}
-                    width={250}
-                    height={250}
-                    chartConfig={{
-                      ...chartConfig,
-                      propsForLabels: {
-                        ...chartConfig.propsForLabels,
-                        fontSize: 14,
-                        fontWeight: 'bold'
-                      }
-                    }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                    paddingLeft="50"
-                    absolute
-                    hasLegend={false}
-                    avoidFalseZero
-                
-                  />
-                  <View style={{ flex: 1, marginLeft: 10 }}>
-                    {incomeData.categories.map((item, index) => (
-                      <View key={index} style={[styles.legendItem, { marginBottom: 8 }]}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <View style={[styles.legendColor, { 
-                            backgroundColor: item.color,
-                            width: 12,
-                            height: 12,
-                            borderRadius: 6,
-                            marginRight: 8
-                          }]} />
-                          <View style={{ flex: 1 }}>
-                            <Text style={[styles.legendCategory, { fontSize: 10, fontWeight: '600' }]}>
-                              {item.name}
-                            </Text>
-                            <Text style={[styles.legendAmount, { fontSize: 10   , color: '#666', marginTop: 1 }]}>
-                              {formatAmount(item.amount)}đ ({item.percentage}%)
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            )}
-            
-            {expenseData.data.length > 0 && (
-              <View style={{ width: 400 }}>
-                <Text style={styles.chartSubtitle}>Chi tiêu theo danh mục</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <PieChart
-                    data={expenseData.data}
-                    width={250}
-                    height={250}
-                    chartConfig={{
-                      ...chartConfig,
-                      propsForLabels: {
-                        ...chartConfig.propsForLabels,
-                        fontSize: 12,
-                        fontWeight: 'bold'
-                      }
-                    }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                    paddingLeft="90"
-                    absolute
-                    hasLegend={false}
-                    avoidFalseZero
-                   
-                  />
-                  <View style={{ flex: 1, marginLeft: 10 }}>
-                    {expenseData.categories.map((item, index) => (
-                      <View key={index} style={[styles.legendItem, { marginBottom: 8 }]}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <View style={[styles.legendColor, { 
-                            backgroundColor: item.color,
-                            width: 10,
-                            height: 10,
-                            borderRadius: 6,
-                          
-                          }]} />
-                          <View style={{ flex: 1 }}>
-                            <Text style={[styles.legendCategory, { fontSize: 10, fontWeight: '600' }]}>
-                              {item.name}
-                            </Text>
-                            <Text style={[styles.legendAmount, { fontSize: 10, color: '#666', marginTop: 1 }]}>
-                              {formatAmount(item.amount)}đ ({item.percentage}%)
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            )}
-          </View>
-        </ScrollView>
+        <View style={styles.totalBlock}>
+          <Ionicons name="arrow-down-circle" size={24} color="#e74c3c" />
+          <Text style={styles.totalLabel}>Chi tiêu</Text>
+          <Text style={[styles.totalAmount, { color: '#e74c3c' }]}>
+            {formatAmount(totals.expense, currency)}
+          </Text>
+        </View>
+
+        <View style={styles.totalBlock}>
+          <Ionicons 
+            name={totals.balance >= 0 ? "wallet" : "wallet-outline"} 
+            size={24} 
+            color={totals.balance >= 0 ? '#2ecc71' : '#e74c3c'} 
+          />
+          <Text style={styles.totalLabel}>Số dư</Text>
+          <Text style={[
+            styles.totalAmount,
+            totals.balance >= 0 ? styles.balancePositive : styles.balanceNegative
+          ]}>
+            {formatAmount(totals.balance, currency)}
+          </Text>
+        </View>
       </View>
 
+      {/* Charts */}
+    {/* Charts */}
+<ScrollView 
+  horizontal 
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={{ paddingHorizontal: 8 }}
+  snapToInterval={SCREEN_WIDTH - 32} // Snap theo chiều rộng màn hình trừ padding
+  decelerationRate="fast" // Tốc độ scroll sau khi thả
+  bounces={false} // Tắt hiệu ứng bật lại khi kéo quá
+>
+  <View style={{ flexDirection: 'row' }}>
+    <View style={{ width: SCREEN_WIDTH - 32 }}>
+      {renderChart('Thu nhập', incomeData, '#2ecc71')}
+    </View>
+    <View style={{ width: SCREEN_WIDTH - 32, marginLeft: 16 }}>
+      {renderChart('Chi tiêu', expenseData, '#e74c3c')}
+    </View>
+  </View>
+</ScrollView>
+
+      {/* Filters */}
       <View style={styles.filterContainer}>
-        {(['day', 'week', 'month', 'year'] as FilterType[]).map((filterType) => (
+        {FILTERS.map((filterType) => (
           <TouchableOpacity
             key={filterType}
             onPress={() => handleFilterPress(filterType)}
-            style={[styles.filterButton, filter === filterType && styles.activeFilter]}
+            style={[
+              styles.filterButton,
+              filter === filterType && styles.activeFilter
+            ]}
+            activeOpacity={0.7}
           >
             <Text style={[
               styles.filterText,
               filter === filterType && styles.activeFilterText
             ]}>
-              {filterType === 'day' ? 'Ngày' :
-               filterType === 'week' ? 'Tuần' :
-               filterType === 'month' ? 'Tháng' : 'Năm'}
+              {FILTER_LABELS[filterType]}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
-    </>
+    </View>
   );
-}; 
+});
+
+ChartSection.displayName = 'ChartSection';

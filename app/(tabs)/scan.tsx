@@ -36,7 +36,7 @@ const ScanScreen = () => {
   if (!permission.granted) {
     return (
       <SafeAreaView style={styles.container} testID="camera-permission-screen">
-        <Text style={styles.message}>Chúng tôi cần quyền truy cập camera</Text>
+        <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>Chúng tôi cần quyền truy cập camera</Text>
         <Button onPress={requestPermission} title="Cấp quyền" testID="grant-permission-button" />
       </SafeAreaView>
     );
@@ -45,7 +45,7 @@ const ScanScreen = () => {
   if (!userId) {
     return (
       <SafeAreaView style={styles.container} testID="login-required-screen">
-        <Text style={styles.message}>Bạn cần đăng nhập để sử dụng tính năng này.</Text>
+        <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>Bạn cần đăng nhập để sử dụng tính năng này.</Text>
       </SafeAreaView>
     );
   }
@@ -114,30 +114,69 @@ const ScanScreen = () => {
       {photoUri ? (
         <View style={styles.previewContainer} testID="photo-preview">
           <Image source={{ uri: photoUri }} style={styles.previewImage} testID="preview-image" />
-          <TouchableOpacity
-            style={styles.retakeButton}
-            onPress={() => {
-              setPhotoUri(null);
-              setTransactionData(null);
-            }}
-            testID="retake-photo-button"
-          >
-            <Ionicons name="arrow-undo-circle-outline" size={50} color="white" />
-          </TouchableOpacity>
+          <View style={styles.previewButtons}>
+            <TouchableOpacity
+              style={styles.retakeButton}
+              onPress={() => {
+                setPhotoUri(null);
+                setTransactionData(null);
+              }}
+              testID="retake-photo-button"
+            >
+              <Ionicons name="arrow-undo-circle-outline" size={40} color="white" />
+              <Text style={styles.buttonText}>Chụp lại</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={() => {
+                setPhotoUri(null);
+                setTransactionData(null);
+              }}
+              testID="confirm-photo-button"
+            >
+              <Ionicons name="checkmark-circle-outline" size={40} color="white" />
+              <Text style={styles.buttonText}>Xác nhận</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : (
         <View style={styles.cameraContainer} testID="camera-container">
-          <TouchableOpacity style={styles.galleryButton} onPress={pickImage} testID="pick-image-button">
-            <Ionicons name="image-outline" size={40} color="white" />
-          </TouchableOpacity>
           <CameraView style={styles.camera} facing={facing} ref={cameraRef} testID="camera-view">
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing} testID="flip-camera-button">
-                <Ionicons name="camera-reverse-outline" size={40} color="white" />
+            <View style={styles.topControls}>
+              <TouchableOpacity 
+                style={styles.galleryButton} 
+                onPress={pickImage} 
+                testID="pick-image-button"
+              >
+                <Ionicons name="images-outline" size={30} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.captureButton} onPress={takePicture} testID="capture-button">
-                <Ionicons name="camera-outline" size={50} color="black" />
+              <TouchableOpacity 
+                style={styles.flashButton} 
+                onPress={() => {}}
+                testID="flash-button"
+              >
+                <Ionicons name="flash-outline" size={30} color="white" />
               </TouchableOpacity>
+            </View>
+            
+            <View style={styles.bottomControls}>
+              <TouchableOpacity 
+                style={styles.flipButton} 
+                onPress={toggleCameraFacing} 
+                testID="flip-camera-button"
+              >
+                <Ionicons name="camera-reverse-outline" size={30} color="white" />
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.captureButton} 
+                onPress={takePicture} 
+                testID="capture-button"
+              >
+                <View style={styles.captureButtonInner} />
+              </TouchableOpacity>
+              
+              <View style={{ width: 30 }} /> {/* Spacer */}
             </View>
           </CameraView>
         </View>
@@ -146,6 +185,13 @@ const ScanScreen = () => {
       {loading && <ActivityIndicator size="large" color="#fff" style={styles.loadingIndicator} testID="loading-indicator" />}
       {transactionData && !loading && (
         <View style={styles.resultContainer} testID="transaction-data-container">
+          <TouchableOpacity 
+            style={styles.closeButton}
+            onPress={() => setTransactionData(null)}
+            testID="close-transaction-button"
+          >
+            <Ionicons name="close" size={20} color="white" />
+          </TouchableOpacity>
           <Text style={styles.resultText}>Dữ liệu giao dịch:</Text>
           <Text style={styles.recognizedText}>Loại: {transactionData.type}</Text>
           <Text style={styles.recognizedText}>Danh mục: {transactionData.category}</Text>
@@ -160,7 +206,7 @@ const ScanScreen = () => {
             </>
           )}
           <Text style={styles.recognizedText}>Tổng tiền: {transactionData.amount} VNĐ</Text>
-          <Text style={styles.recognizedText}>User ID: {transactionData.userId}</Text>
+          
         </View>
       )}
     </SafeAreaView>
@@ -170,68 +216,104 @@ const ScanScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#000', // Optional: Dark background for better contrast
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 50,
-    fontSize: 16,
-    color: '#fff',
+    backgroundColor: '#fff',
   },
   cameraContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'relative',
   },
   camera: {
     flex: 1,
-    width: '100%',
   },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginBottom: 20,
-    paddingHorizontal: 20,
-  },
-  flipButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 50,
-    padding: 10,
-  },
-  captureButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 50,
-    padding: 15,
-  },
-  galleryButton: {
+  topControls: {
     position: 'absolute',
     top: 50,
-    left: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 50,
-    padding: 10,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
     zIndex: 1,
+  },
+  bottomControls: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+  },
+  galleryButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flashButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flipButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  captureButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 3,
+    borderColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  captureButtonInner: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'white',
   },
   previewContainer: {
     flex: 1,
+    backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
   },
   previewImage: {
-    width: '90%',
+    width: '100%',
     height: '80%',
     resizeMode: 'contain',
-    borderRadius: 10,
+  },
+  previewButtons: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
   },
   retakeButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 50,
-    padding: 10,
-    marginTop: 20,
+    alignItems: 'center',
+  },
+  confirmButton: {
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    marginTop: 5,
+    fontSize: 14,
   },
   resultContainer: {
     padding: 20,
@@ -255,6 +337,53 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     alignSelf: 'center',
+  },
+  transactionContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 10
+  },
+  transactionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10
+  },
+  itemContainer: {
+    marginVertical: 5,
+    padding: 10,
+    backgroundColor: '#e9ecef',
+    borderRadius: 5
+  },
+  totalAmount: {
+    marginTop: 10,
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    borderRadius: 20,
+    padding: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

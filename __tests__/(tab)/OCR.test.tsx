@@ -125,3 +125,57 @@ describe('ScanScreen', () => {
     await waitFor(() => expect(getByText('Danh mục: food')).toBeTruthy());
   });
 });
+
+
+describe('ScanScreen Data Handling', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetchUserId.mockResolvedValue('test-user-id');
+  });
+
+  it('hiển thị dữ liệu giao dịch sau khi tải lên thành công', async () => {
+    const mockTransactionData = {
+      type: 'expense',
+      category: 'food',
+      items: [{ productName: 'Test Item', quantity: 1, price: 100000 }],
+      amount: 100000
+    };
+    
+    mockUploadPhoto.mockResolvedValue({
+      data: mockTransactionData,
+      imageUrl: 'http://example.com/test-image.jpg'
+    });
+
+    const { getByTestId, findByText } = render(<ScanScreen />);
+await waitFor(() => expect(getByTestId('camera-container')).toBeTruthy());
+fireEvent.press(getByTestId('capture-button'));
+    
+    await waitFor(() => {
+      expect(findByText('Test Item')).toBeTruthy();
+      expect(findByText('100,000 VND')).toBeTruthy();
+      expect(findByText('food')).toBeTruthy();
+    });
+  });
+
+  it('xử lý phản hồi lỗi API', async () => {
+    mockUploadPhoto.mockRejectedValue(new Error('API Error'));
+    
+    const { getByTestId, findByText } = render(<ScanScreen />);
+await waitFor(() => expect(getByTestId('camera-container')).toBeTruthy());
+fireEvent.press(getByTestId('capture-button'));
+    
+    await waitFor(() => 
+      expect(findByText('Lỗi: API Error')).toBeTruthy()
+    );
+  });
+
+  it('hiển thị trạng thái tải trong khi gọi API', async () => {
+    mockUploadPhoto.mockImplementation(() => new Promise(() => {}));
+    
+    const { getByTestId } = render(<ScanScreen />);
+await waitFor(() => expect(getByTestId('camera-container')).toBeTruthy());
+fireEvent.press(getByTestId('capture-button'));
+    
+    expect(getByTestId('loading-indicator')).toBeTruthy();
+  });
+});

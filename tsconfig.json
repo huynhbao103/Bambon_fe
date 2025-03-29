@@ -1,7 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "types": ["jest", "node", "@wdio/types", "webdriverio"],
+    "types": ["jest", "node", "@wdio/types", "webdriverio", "@wdio/mocha-framework"],
     "strict": true,
     "paths": {
       "@/*": [
@@ -15,4 +15,4 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]
-} 
+}

@@ -8,4 +8,4 @@ export default jest.fn((uri: string, userId: string) => {
     },
     imageUrl: 'http://example.com/mock-image.jpg'
   });
-});
+}); 

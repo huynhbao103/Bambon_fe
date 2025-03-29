@@ -59,20 +59,22 @@ const LoginScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <TextInput
+        testID="email"
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
       />
       <TextInput
+        testID="password"
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
       />
-      {error && <Text style={styles.errorText}>{error}</Text>}
-      <Button title="Login" onPress={() => login(email, password, router, setError)} color="#32CD32" />
+      {error && <Text style={styles.errorText} testID="errorMessage">{error}</Text>}
+      <Button title="Login" testID="loginButton" onPress={() => login(email, password, router, setError)} color="#32CD32" />
       <Link href="/pages/register" asChild>
         <Pressable style={styles.registerLink}>
           <Text>Go to Register</Text>

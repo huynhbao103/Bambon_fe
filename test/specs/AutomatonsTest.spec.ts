@@ -6,7 +6,7 @@ describe('Login', () => {
     await (browser as any).startActivity('com.huynhbao103.Bambon_Fe', 'com.huynhbao103.Bambon_Fe.MainActivity');
   });
 
-  // after(async () => {
+  // after(async () => { 
   //   await (browser as any).terminateApp('com.huynhbao103.Bambon_Fe');
   // });
 

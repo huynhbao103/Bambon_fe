@@ -38,6 +38,10 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   if (!selectedTransaction || !editedTransaction) return null;
  
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [isManualAmountEdit, setIsManualAmountEdit] = useState(false);
+  const [isManualFieldEdit, setIsManualFieldEdit] = useState<{
+    [key: string]: boolean;
+  }>({});
 
 
   const validateInput = (field: string, value: string | number): boolean => {
@@ -88,17 +92,59 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
 
   const calculateTotal = () => {
-    let total = 0;
-    if (editedTransaction.items && editedTransaction.items.length > 0) {
-      total = editedTransaction.items.reduce((sum, item) => {
+    if (!isManualAmountEdit && editedTransaction.items) {
+      const total = editedTransaction.items.reduce((sum, item) => {
         return sum + (item.quantity * item.price);
       }, 0);
-     
+      
       setEditedTransaction({
         ...editedTransaction,
         amount: total
       });
     }
+  };
+
+  const handleUpdateItem = (index: number, field: string, value: string | number) => {
+    const fieldId = `${field}_${index}`;
+    let processedValue = value;
+    let isValid = false;
+  
+    if (field === "productName") {
+      isValid = validateInput('productName', value);
+      if (isValid) {
+        processedValue = value.toString().trim();
+      }
+    } else if (field === "price" || field === "quantity") {
+      const numValue = typeof value === 'string' ? 
+        parseFloat(value.replace(/[^0-9.-]/g, '')) || 0 : value;
+      
+      isValid = validateInput(field, numValue);
+      if (isValid) {
+        processedValue = Math.max(0, numValue);
+        setIsManualAmountEdit(false);
+      }
+    }
+  
+    if (isValid) {
+      updateItem(index, field, processedValue);
+      
+      // Only calculate total if not manually editing this field
+      if ((field === "price" || field === "quantity") && !isManualFieldEdit[fieldId]) {
+        calculateTotal();
+      }
+    }
+  };
+
+  // Add these new handlers for field focus/blur
+  const handleFieldFocus = (index: number, field: string) => {
+    const fieldId = `${field}_${index}`;
+    setIsManualFieldEdit(prev => ({...prev, [fieldId]: true}));
+  };
+
+  const handleFieldBlur = (index: number, field: string) => {
+    const fieldId = `${field}_${index}`;
+    setIsManualFieldEdit(prev => ({...prev, [fieldId]: false}));
+    calculateTotal();
   };
 
 
@@ -137,48 +183,6 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
    
     onSave();
   };
-
-
-  const handleUpdateItem = (index: number, field: string, value: string | number) => {
-    const fieldId = `${field}_${index}`;
-    let processedValue = value;
-    let isValid = false;
-
-    if (field === "productName") {
-      isValid = validateInput('productName', value);
-      if (isValid) {
-        processedValue = value.toString().trim();
-      }
-    } else if (field === "price" || field === "quantity") {
-      const numValue = typeof value === 'string' ? 
-        parseFloat(value.replace(/[^0-9.-]/g, '')) || 0 : value;
-      
-      isValid = validateInput(field, numValue);
-      if (isValid) {
-        processedValue = Math.max(0, numValue);
-      }
-    }
-
-    if (isValid) {
-      updateItem(index, field, processedValue);
-      if (field === "price" || field === "quantity") {
-        calculateTotal();
-      }
-    }
-  };
-
-
-  const handleAmountChange = (text: string) => {
-    const numValue = parseFloat(text) || 0;
-    if (validateInput('amount', numValue)) {
-      setEditedTransaction({
-        ...editedTransaction,
-        amount: numValue,
-      });
-    }
-  };
-
-
   return (
     <Modal
       animationType="slide"
@@ -222,7 +226,13 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                     style={[styles.input, errors['amount'] ? styles.inputError : null]}
                     value={editedTransaction.amount.toString()}
                     keyboardType="numeric"
-                    onChangeText={handleAmountChange}
+                    onChangeText={(text) => {
+                      const numValue = parseFloat(text.replace(/[^0-9.-]/g, '')) || 0;
+                      if (validateInput('amount', numValue)) {
+                        setIsManualAmountEdit(true);
+                        setEditedTransaction({ ...editedTransaction, amount: numValue });
+                      }
+                    }}
                     placeholder="Nhập số tiền"
                     maxLength={10}
                     testID="amount-input"
@@ -246,23 +256,26 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                     </View>
                     <View style={styles.itemField}>
                       <Text style={styles.itemLabel}>Số lượng</Text>
+                      // For quantity input
                       <TextInput
                         style={[styles.itemInput, errors[`quantity_${index}`] ? styles.inputError : null]}
                         value={item.quantity.toString()}
                         keyboardType="numeric"
                         onChangeText={(text) => handleUpdateItem(index, "quantity", text)}
+                        onFocus={() => handleFieldFocus(index, "quantity")}
+                        onBlur={() => handleFieldBlur(index, "quantity")}
                         placeholder="Số lượng"
                         testID={`quantity-${index}`}
                       />
-                      {errors[`quantity_${index}`] && <Text style={styles.errorText}>{errors[`quantity_${index}`]}</Text>}
-                    </View>
-                    <View style={styles.itemField}>
-                      <Text style={styles.itemLabel}>Giá (VNĐ)</Text>
+                      
+                      // For price input
                       <TextInput
                         style={[styles.itemInput, errors[`price_${index}`] ? styles.inputError : null]}
                         value={item.price.toString()}
                         keyboardType="numeric"
                         onChangeText={(text) => handleUpdateItem(index, "price", text)}
+                        onFocus={() => handleFieldFocus(index, "price")}
+                        onBlur={() => handleFieldBlur(index, "price")}
                         placeholder="Giá"
                         maxLength={10}
                         testID={`price-${index}`}

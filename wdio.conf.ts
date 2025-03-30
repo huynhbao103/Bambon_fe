@@ -14,7 +14,7 @@ export const config = {
         platformName: 'Android',
         'appium:deviceName': 'emulator-5554',
         'appium:platformVersion': '11',
-        'appium:app': 'D:\\DamBaoChatLuong\\25-3\\Bambon.apk',
+        'appium:app': 'D:\\DamBaoChatLuong\\25-3\\Bambon_1.1.0.apk',
         'appium:appPackage': 'com.huynhbao103.Bambon_Fe',
         'appium:appActivity': 'com.huynhbao103.Bambon_Fe.MainActivity',
         'appium:automationName': 'UiAutomator2',

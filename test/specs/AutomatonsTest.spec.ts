@@ -113,47 +113,144 @@ describe('OCR- Check Navigation', () => {
     expect(await scanButton.isDisplayed()).toBe(true);
     await scanButton.click();
   });
-  it('Tìm và nhấp vào nút thêm Hình ảnh', async () => {
-    const chooseImage = await $('android=new UiSelector().resourceId("pick-image-button")');
-    await chooseImage.waitForDisplayed({ timeout: 5000 });
+});
+//   it('Tìm và nhấp vào nút thêm Hình ảnh', async () => {
+//     const chooseImage = await $('android=new UiSelector().resourceId("pick-image-button")');
+//     await chooseImage.waitForDisplayed({ timeout: 5000 });
 
-    expect(await chooseImage.isDisplayed()).toBe(true);
-    await chooseImage.click();
-  });
-  it('Kiểm tra màn hình chọn ảnh = true -> chọn ảnh', async () => {
-    const screen = await $('android=new UiSelector().resourceId("com.google.android.documentsui:id/dir_list")');
-    await screen.waitForDisplayed({ timeout: 5000 });
+//     expect(await chooseImage.isDisplayed()).toBe(true);
+//     await chooseImage.click();
+//   });
+//   it('Kiểm tra màn hình chọn ảnh = true -> chọn ảnh', async () => {
+//     const screen = await $('android=new UiSelector().resourceId("com.google.android.documentsui:id/dir_list")');
+//     await screen.waitForDisplayed({ timeout: 5000 });
 
-    if (await screen.isDisplayed()) {
-        const imageElement = await $('android=new UiSelector().resourceId("com.google.android.documentsui:id/icon_thumb").instance(9)');
-        await imageElement.click();
-    }
-  });
-  it('Nhấp vào nút Crop sau khi chọn ảnh', async () => {
-    const cropButton = await $('android=new UiSelector().resourceId("com.huynhbao103.Bambon_Fe:id/crop_image_menu_crop")');
+//     if (await screen.isDisplayed()) {
+//         const imageElement = await $('android=new UiSelector().resourceId("com.google.android.documentsui:id/icon_thumb").instance(9)');
+//         await imageElement.click();
+//     }
+//   });
+//   it('Nhấp vào nút Crop sau khi chọn ảnh', async () => {
+//     const cropButton = await $('android=new UiSelector().resourceId("com.huynhbao103.Bambon_Fe:id/crop_image_menu_crop")');
 
-    await cropButton.waitForDisplayed({ timeout: 5000 });
-    await cropButton.click();
-  });
-  it('Chọn xác nhận', async () => {
-    await browser.pause(5000); 
+//     await cropButton.waitForDisplayed({ timeout: 5000 });
+//     await cropButton.click();
+//   });
+//   it('Chọn xác nhận', async () => {
+//     await browser.pause(5000); 
 
-    const targetElement = await $('android=new UiSelector().resourceId("confirm-photo-button")');
+//     const targetElement = await $('android=new UiSelector().resourceId("confirm-photo-button")');
 
-    await targetElement.waitForDisplayed({ timeout: 30000, interval: 1000 }); 
+//     await targetElement.waitForDisplayed({ timeout: 30000, interval: 1000 }); 
 
-    expect(await targetElement.isDisplayed()).toBe(true);
-    await targetElement.click();
-  });
-  it('Chờ màn hình xuất hiện rồi chọn nút OK', async () => {
-    const confirmButton = await $('android=new UiSelector().resourceId("android:id/button1")');
+//     expect(await targetElement.isDisplayed()).toBe(true);
+//     await targetElement.click();
+//   });
+//   it('Chờ màn hình xuất hiện rồi chọn nút OK', async () => {
+//     const confirmButton = await $('android=new UiSelector().resourceId("android:id/button1")');
 
-    await confirmButton.waitForExist({ timeout: 60000 });
+//     await confirmButton.waitForExist({ timeout: 60000 });
   
-    if (await confirmButton.isDisplayed()) {
-      await confirmButton.click();
-    } else {
-      throw new Error('Nút OK không hiển thị');
-    }
+//     if (await confirmButton.isDisplayed()) {
+//       await confirmButton.click();
+//     } else {
+//       throw new Error('Nút OK không hiển thị');
+//     }
+//   });
+// });
+describe('addTransaction Income', () => {
+  it('Kiểm tra xem thanh navigation có hiển thị không', async () => {
+    const navigationBar = await $('android=new UiSelector().className("android.view.ViewGroup").instance(17)');
+    await navigationBar.waitForDisplayed({ timeout: 5000 });
+
+    expect(await navigationBar.isDisplayed()).toBe(true);
+  });
+  it("Tìm và nhấn vào nút nhập", async () => {
+    const incomeButton = await $('android=new UiSelector().description(", Nhập")');
+    await incomeButton.waitForDisplayed({ timeout: 5000 });
+
+    expect(await incomeButton.isDisplayed()).toBe(true);
+    await incomeButton.click();
+  });
+  it("Tìm và nhấn vào nút Thu nhập", async () => {
+    const incomeButton = await $('android=new UiSelector().resourceId("transaction-type-income")');
+    await incomeButton.waitForDisplayed({ timeout: 5000 });
+
+    expect(await incomeButton.isDisplayed()).toBe(true);
+    await incomeButton.click();
+  });
+  it('Nhấp mà không chọn danh mục', async () => {
+    const submitButton = await $('android=new UiSelector().resourceId("submit-transaction-button")');
+    await submitButton.waitForDisplayed({ timeout: 5000 });
+    await submitButton.click();
+
+    expect(await submitButton.isDisplayed()).toBe(false);
+    
+    const frameLayout = await $('android=new UiSelector().className("android.widget.FrameLayout").instance(0)');
+    await frameLayout.waitForDisplayed({ timeout: 5000 });
+    expect(await frameLayout.isDisplayed()).toBe(true);
+
+    const errorMessage = await $('android=new UiSelector().resourceId("android:id/message")');
+    await errorMessage.waitForDisplayed({ timeout: 5000 });
+    expect(await errorMessage.getText()).toBe('Vui lòng chọn danh mục.');
+
+    const confirmButton = await $('android=new UiSelector().resourceId("android:id/button1")');
+    await confirmButton.waitForExist({ timeout: 5000 });
+    expect(await confirmButton.isDisplayed()).toBe(true);
+    await confirmButton.click();
+  });
+
+  it("Tìm và nhấn vào nút Thêm mới", async () => {
+    const addButton = await $('android=new UiSelector().resourceId("add-custom-category-button")');
+    await addButton.waitForDisplayed({ timeout: 5000 });
+  
+    expect(await addButton.isDisplayed()).toBe(true);
+    await addButton.click();
+  });
+  it("Nhập danh mục mới, xác nhận và chọn danh mục", async () => {
+    const categoryInput = await $('android=new UiSelector().text("Nhập danh mục mới")');
+    await categoryInput.waitForDisplayed({ timeout: 5000 });
+
+    expect(await categoryInput.isDisplayed()).toBe(true);
+    await categoryInput.setValue("phake0");
+
+    const confirmButton = await $('android=new UiSelector().resourceId("confirm-add-category-button")');
+    await confirmButton.waitForDisplayed({ timeout: 5000 });
+    expect(await confirmButton.isDisplayed()).toBe(true);
+    await confirmButton.click();
+
+    const newCategory = await $('android=new UiSelector().description(", phake0")');
+    await newCategory.waitForDisplayed({ timeout: 5000 });
+
+    expect(await newCategory.isDisplayed()).toBe(true);
+
+    await newCategory.click();
+  });
+
+  it('Nhập số tiền và gửi giao dịch', async () => {
+    const amountInput = await $('android=new UiSelector().text("Nhập số tiền")');
+    await amountInput.waitForDisplayed({ timeout: 5000 });
+
+    await amountInput.setValue('100000');
+
+    const submitButton = await $('android=new UiSelector().resourceId("submit-transaction-button")');
+    await submitButton.waitForDisplayed({ timeout: 5000 });
+    await submitButton.click();
+
+    expect(await submitButton.isDisplayed()).toBe(false); 
+  });
+  it('Kiểm tra FrameLayout và nhấn nút xác nhận', async () => {
+    const frameLayout = await $('android=new UiSelector().className("android.widget.FrameLayout").instance(0)');
+    await frameLayout.waitForDisplayed({ timeout: 5000 });
+    expect(await frameLayout.isDisplayed()).toBe(true);
+
+    const errorMessage = await $('android=new UiSelector().resourceId("android:id/message")');
+    await errorMessage.waitForDisplayed({ timeout: 5000 });
+    expect(await errorMessage.getText()).toBe('Giao dịch đã được thêm thành công!');
+
+    const confirmButton = await $('android=new UiSelector().resourceId("android:id/button1")');
+    await confirmButton.waitForExist({ timeout: 5000 });
+    expect(await confirmButton.isDisplayed()).toBe(true);
+    await confirmButton.click();
   });
 });

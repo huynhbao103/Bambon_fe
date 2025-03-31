@@ -20,8 +20,7 @@ describe('ScanScreen Tests', () => {
     mockFetchUserId.mockResolvedValue('test-user-id');
   });
 
-  // Test cases liên quan đến render ban đầu
-  describe('Render Initial States', () => {
+  describe('renderState', () => {
     it('UTCID-01: Hiển thị màn hình tải ban đầu khi chưa có permission', () => {
       const { getByTestId } = render(<ScanScreen />);
       expect(getByTestId('loading-screen')).toBeTruthy();
@@ -51,7 +50,6 @@ describe('ScanScreen Tests', () => {
     });
   });
 
-  // Test cases cho hàm toggleCameraFacing
   describe('toggleCameraFacing', () => {
     it('UTCID-04: Chuyển đổi hướng camera từ back sang front và ngược lại', async () => {
       jest.spyOn(require('expo-camera'), 'useCameraPermissions')
@@ -66,7 +64,6 @@ describe('ScanScreen Tests', () => {
     });
   });
 
-  // Test cases cho hàm takePicture
   describe('takePicture', () => {
     it('UTCID-05: Chụp ảnh và tải lên thành công', async () => {
       const mockTakePictureAsync = jest.fn().mockResolvedValue({ uri: 'test-uri' });
@@ -128,7 +125,6 @@ describe('ScanScreen Tests', () => {
     });
   });
 
-  // Test cases cho hàm pickImage
   describe('pickImage', () => {
     it('UTCID-08: Chọn ảnh từ thư viện và tải lên thành công', async () => {
       jest.spyOn(require('expo-camera'), 'useCameraPermissions')
@@ -155,7 +151,6 @@ describe('ScanScreen Tests', () => {
     });
   });
 
-  // Test cases cho hàm handlePhotoUpload
   describe('handlePhotoUpload', () => {
     it('UTCID-09: Hiển thị dữ liệu giao dịch sau khi tải lên thành công', async () => {
       const mockTakePictureAsync = jest.fn().mockResolvedValue({ uri: 'test-uri' });

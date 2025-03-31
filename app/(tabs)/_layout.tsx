@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
 import { useColorScheme } from '../../hooks/useColorScheme';
 import { StatusBar } from 'expo-status-bar';
+import AddTransactionScreen from './addTransaction';
 
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
@@ -87,9 +88,9 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="settings"
+          name="addTransaction"
           options={{
-            title: 'Nhập',
+            title: 'Nhập', // Tiêu đề hiển thị trên tab
             tabBarIcon: ({ color, focused }) => (
               <Ionicons 
                 size={focused ? 32 : 28} 
